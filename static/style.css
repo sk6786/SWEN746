@@ -1,0 +1,78 @@
+.landing {
+  height: 92vh;
+  background-image: linear-gradient(to bottom, rgba(245, 246, 252, 0.52), #495057), url("images/bg-masthead.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-size: cover;
+}
+.bg {
+    width: 100%;
+    z-index: 0;
+}
+.landDiv{
+    padding-top: 10rem;
+}
+.mybut{
+    margin:10px;
+    margin-top:20px;
+}
+
+.formDiv{
+    min-height:300px;
+    background-color: white;
+    border-radius: 5px;
+    justify-content: center;
+    margin:auto;
+    margin-top: 10%;
+    padding: 4%;
+}
+
+.card{
+margin-top: 60px;
+width: 400px;
+background-color: rgba(0,0,0,0.5) !important;
+}
+
+.card-header h3{
+color: white;
+    text-align: center;
+}
+
+.error{
+    clear:both;
+    color:white;
+}
+.form-group label{
+    color:white;
+}
+.input-group-prepend span{
+width: 50px;
+background-color: #FFC312;
+color: black;
+border:0 !important;
+}
+
+input:focus{
+outline: 0 0 0 0  !important;
+box-shadow: 0 0 0 0 !important;
+
+}
+.login_btn{
+color: black;
+background-color: #FFC312;
+width: 100px;
+}
+
+.login_btn:hover{
+color: black;
+background-color: white;
+}
+
+.links{
+color: white;
+}
+
+.links a{
+margin-left: 4px;
+}

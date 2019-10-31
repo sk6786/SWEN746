@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Bootstrap core CSS -->
+  <link href="../../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../../static/style.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+
+</head>
+<script>
+    $(document).ready(function () {
+    change_nav();
+    });
+    function change_nav(){
+    var active = document.querySelector(".active");
+    active.classList.remove("active");
+    $('#login').addClass('active');
+    }
+
+</script>
+<body>
+
+  {% include 'layout.html' %}
+ <div class = "landing">
+  <div class="container">
+        <div class="d-flex justify-content-center h-100">
+		<div class="card">
+			<div class="card-header">
+				<h3>Sign In</h3>
+
+			</div>
+			<div class="card-body">
+				<form action="" method="post">
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fa fa-user"></i></span>
+						</div>
+						<input type="text" class="form-control" placeholder="email" name="email" value="{{
+          request.form.email }}">
+
+					</div>
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fa fa-key"></i></span>
+						</div>
+						<input type="password" class="form-control" placeholder="password" name="password" value="{{
+          request.form.password }}">
+					</div>
+                    {% if error %}
+                    <p class="error"><strong>Error:</strong> {{ error }}
+                  {% endif %}
+					<div class="form-group">
+						<input type="submit" value="Login" class="btn float-right login_btn">
+					</div>
+				</form>
+
+			</div>
+			<div class="card-footer">
+				<div class="d-flex justify-content-center links">
+					Don't have an account?<a href="register">Sign Up</a>
+				</div>
+				<div class="d-flex justify-content-center">
+					<a href="forgot_password">Forgot your password?</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+  </div>
+
+  </div>
+
+</body>
+</html>
