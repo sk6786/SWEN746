@@ -1,7 +1,7 @@
 
 import sys
 sys.path.append("D:\Github\SWEN746")
-from model.account.Account import Account
+from model.account.account import Account
 
 class AdministratorAccount(Account):
 

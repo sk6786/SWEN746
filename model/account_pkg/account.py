@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from model.observer.Observer import Observer
+from model.observer import Observer
 
 class Account(Observer):
 
