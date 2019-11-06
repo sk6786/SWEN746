@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
-from model.observer import Subject
+
+
 class Observer:
-    
+
     @abstractmethod
-    def update(self, subject: Subject):
+    def update(self):
+        # from model.observer_pkg.subject import Subject
         pass

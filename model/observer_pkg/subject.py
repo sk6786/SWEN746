@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from model.observer import Observer
+from model.observer_pkg.observer import Observer
+
 
 class Subject(ABC):
 
