@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__, template_folder="view")
-
+from controller import register, auth
 
 @app.route('/')
 def main():
@@ -29,6 +29,7 @@ def register():
             error = 'Input cannot be empty'
         else:
             #capture and send credentials to DB
+            register.
             return redirect(url_for('home'))
     return render_template("/auth/register.html",error=error)
 @app.route('/forgot_password')
