@@ -12,7 +12,7 @@ def login():
     error = None
     if request.method == 'POST':
         auth = Auth.Auth()
-        if not auth.login(request.form['email'],request.form['password']):
+        if not auth.user_exists(request.form['email'],request.form['password']):
             error = 'Invalid username or password'
         else:
             return redirect(url_for('home'))
@@ -27,12 +27,13 @@ def home():
 def register():
     error = None
     if request.method == 'POST':
-        if request.form['name'] == '' or request.form['password'] == '' or request.form['email'] == '':
-            error = 'Input cannot be empty'
+        auth = Auth.Auth()
+        if auth.user_exists(request.form['email'], request.form['password']):
+            error = 'Choose different username'
         else:
             #capture and send credentials to DB
             register = Register.Register()
-            register.create_account(username='hello', password='123')
+            register.create_account(username=request.form['email'], password=request.form['password'])
             return redirect(url_for('home'))
     return render_template("/auth/register.html",error=error)
 @app.route('/forgot_password')
