@@ -12,7 +12,7 @@ def login():
     error = None
     if request.method == 'POST':
         auth = Auth.Auth()
-        if not auth.user_exists(request.form['email'],request.form['password']):
+        if not auth.login(request.form['email'],request.form['password']):
             error = 'Invalid username or password'
         else:
             return redirect(url_for('home'))
@@ -28,7 +28,7 @@ def register():
     error = None
     if request.method == 'POST':
         auth = Auth.Auth()
-        if auth.user_exists(request.form['email'], request.form['password']):
+        if auth.user_exists(request.form['email']):
             error = 'Choose different username'
         else:
             #capture and send credentials to DB
