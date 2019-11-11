@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../static/style.css" rel="stylesheet">
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+</head>
+<body>
+<script>
+    $(function()
+{
+    $(document).on('click', '.btn-add', function(e)
+    {
+        e.preventDefault();
+
+        var controlForm = $('.controls form:first'),
+            currentEntry = $(this).parents('.entry:first'),
+            newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+        newEntry.find('input').val('');
+        controlForm.find('.entry:not(:last) .btn-add')
+            .removeClass('btn-add').addClass('btn-remove')
+            .removeClass('btn-success').addClass('btn-danger')
+            .html('<span class="fa fa-minus"></span>');
+    }).on('click', '.btn-remove', function(e)
+    {
+		$(this).parents('.entry:first').remove();
+
+		e.preventDefault();
+		return false;
+	});
+});
+
+
+
+    </script>
+{% include 'layout.html' %}
+<div class="container">
+    <h2 style="text-align: center; margin-top: 20px">
+        New Paper Submission
+    </h2>
+<form>
+    <div class="form-group">
+    <label for="title">Title</label>
+    <input type="text" class="form-control" id="title" placeholder="Research on Accessibility" required>
+  </div>
+    <div class="form-group">
+    <label for="topic">Topic</label>
+    <input type="text" class="form-control" id="topic" placeholder="Accessibility" required>
+  </div>
+    <div class="form-group">
+    <label for="version">Version</label>
+    <input type="number" class="form-control" id="version" placeholder="1.0" required>
+  </div>
+
+    <div class="form-group">
+    <label for="fileUpload">File Upload</label>
+    <input type="file" class="form-control-file" id="fileUpload" accept=".doc,.pdf" required>
+  </div>
+    <div class="form-group">
+    <label for="authors">Author(s)</label>
+    <textarea class="form-control" id="authors" rows="3" required></textarea>
+  </div>
+
+   <button  class="btn btn-primary"  >Submit</button>
+</form>
+    </div>
+
+<!--<div class="container" style="padding-left: 30px">-->
+	<!--<div class="row">-->
+        <!--<div class="control-group" id="fields">-->
+            <!--<label class="control-label" for="field1">Author(s)</label>-->
+            <!--<div class="controls">-->
+                <!--<form role="form" autocomplete="off">-->
+                    <!--<div class="entry input-group col-xs-3" style="margin-bottom:5px">-->
+                        <!--<input class="form-control" name="fields[]" type="text" placeholder="Type something" />-->
+                    	<!--<span class="input-group-btn">-->
+                            <!--<button class="btn btn-success btn-add" type="button">-->
+                                <!--<span class="fa fa-plus"></span>-->
+                            <!--</button>-->
+                        <!--</span>-->
+                    <!--</div>-->
+                <!--</form>-->
+            <!--<br>-->
+            <!--</div>-->
+        <!--</div>-->
+	<!--</div>-->
+<!--</div>-->
+</body>
+</html>
