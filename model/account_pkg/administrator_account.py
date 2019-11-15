@@ -4,19 +4,19 @@ from model.account_pkg.account import Account
 class AdministratorAccount(Account):
 
     def __init__(self, account_id: int, username: str, password: str):
-        self.__account_id = account_id
-        self.__username = username
-        self.__password = password
+        super(AdministratorAccount, self).__init__(account_id, username, password)
 
-    @property
-    def __account_id(self):
-        return self.__account_id
+    # @property
+    # def _account_id(self):
+    #     return self._account_id
+    #
+    # @_account_id.setter
+    # def _account_id(self, acc_id):
+    #     self._accountID = acc_id
 
-    @__account_id.setter
-    def __account_id(self, acc_id):
-        self.__accountID = acc_id
 
-    # TODO: add other getter and setter
+
+    # TODO: Add Setters
 
     def login(self, username: str, password: str):
         pass
@@ -50,3 +50,12 @@ class AdministratorAccount(Account):
 
     def delete_account(self, account_id: int):
         pass
+
+    def get_account_id(self):
+        return self._account_id
+
+    def get_username(self):
+        return self._username
+
+    def get_password(self):
+        return self._password

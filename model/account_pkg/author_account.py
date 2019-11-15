@@ -3,24 +3,12 @@ import pymongo
 from pymongo import MongoClient
 import urllib.parse
 
+
 class AuthorAccount(Account):
 
-    def __init__(self):
-        self.__account_id = ""
-        self.__username = ""
-        self.__password = ""
+    def __init__(self, account_id: int, username: str, password: str):
+        super(AuthorAccount, self).__init__(account_id, username, password)
         self.__client = pymongo.MongoClient("mongodb+srv://"+urllib.parse.quote_plus("USER2")+":"+urllib.parse.quote_plus("1q2w3e4r")+"@cluster0-tk7v1.mongodb.net/test?retryWrites=true&w=majority")
-
-
-    @property
-    def __account_id(self):
-        return self.__account_id
-
-    @__account_id.setter
-    def __account_id(self, acc_id):
-        self.__accountID = acc_id
-
-    # TODO: add other getter and setter
 
     def login(self, username, password):
         db = self.__client.get_database("SAM2020")
@@ -29,9 +17,9 @@ class AuthorAccount(Account):
         if res is None:
             return 0
         else:
-            self.__username = username
-            self.__account_id = res['_id']
-            self.__password = password
+            self._username = username
+            self._account_id = res['_id']
+            self._password = password
             return 1
 
     def user_exists(self, username):
@@ -61,3 +49,11 @@ class AuthorAccount(Account):
     def notify_account_change(self):
         pass
 
+    def get_account_id(self):
+        return self._account_id
+
+    def get_username(self):
+        return self._username
+
+    def get_password(self):
+        return self._password

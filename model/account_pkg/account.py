@@ -6,7 +6,10 @@ import urllib.parse
 
 class Account(ABC):
 
-    def __init__(self):
+    def __init__(self, account_id: int, username: str, password: str):
+        self._account_id = account_id
+        self._username = username
+        self._password = password
         self.__client = pymongo.MongoClient("mongodb+srv://"+urllib.parse.quote_plus("USER2")+":"+urllib.parse.quote_plus("1q2w3e4r")+"@cluster0-tk7v1.mongodb.net/test?retryWrites=true&w=majority")
 
 
