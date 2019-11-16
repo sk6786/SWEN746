@@ -1581,16 +1581,16 @@ $.magnificPopup.registerModule(IFRAME_NS, {
 			youtube: {
 				index: 'youtube.com',
 				id: 'v=',
-				src: '//www.youtube.com/embed/%id%?autoplay=1'
+				src: '//www.youtube.com/embed/%entry_id%?autoplay=1'
 			},
 			vimeo: {
 				index: 'vimeo.com/',
 				id: '/',
-				src: '//player.vimeo.com/video/%id%?autoplay=1'
+				src: '//player.vimeo.com/video/%entry_id%?autoplay=1'
 			},
 			gmaps: {
 				index: '//maps.google.',
-				src: '%id%&output=embed'
+				src: '%entry_id%&output=embed'
 			}
 		}
 	},
@@ -1629,7 +1629,7 @@ $.magnificPopup.registerModule(IFRAME_NS, {
 							embedSrc = this.id.call( this, embedSrc );
 						}
 					}
-					embedSrc = this.src.replace('%id%', embedSrc );
+					embedSrc = this.src.replace('%entry_id%', embedSrc );
 					return false; // break;
 				}
 			});

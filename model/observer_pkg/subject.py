@@ -15,5 +15,3 @@ class Subject(ABC):
     @abstractmethod
     def notify(self):
         pass
-
-

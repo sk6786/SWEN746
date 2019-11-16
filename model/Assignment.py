@@ -1,5 +1,0 @@
-
-
-
-class Assignment():
-    pass
