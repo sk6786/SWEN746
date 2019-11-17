@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__, template_folder="view")
 from controller import register as Register
 from model.account_pkg import author_account as author
+from flask import jsonify
 
 @app.route('/')
 def main():
@@ -51,5 +52,15 @@ def upload_file():
 @app.route('/forgot_password')
 def forgot_password():
     return render_template("/auth/forgot_password.html")
+
+@app.route('/resubmit')
+def resubmit():
+    return render_template("/resubmit.html", files = [{'title':'saad', 'version': '234', 'paperId':'123'},{'title':'saad', 'version': '234', 'paperid': '3122'}])
+
+@app.route('/resubmitPaper')
+def resubmitPaper():
+    request.args.get()
+    return jsonify(status='success')
+
 if __name__ == '__main__':
     app.run()
