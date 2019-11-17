@@ -4,7 +4,7 @@ from model.account_pkg.account import Account
 class AdministratorAccount(Account):
 
     def __init__(self, account_id: int, username: str, password: str):
-        super(AdministratorAccount, self).__init__(account_id, username, password)
+        super(AdministratorAccount, self).__init__(account_id, username, password, Account.Role.ADMIN)
 
     # @property
     # def _account_id(self):

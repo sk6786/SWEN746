@@ -7,7 +7,7 @@ import urllib.parse
 class AuthorAccount(Account):
 
     def __init__(self, account_id: int, username: str, password: str):
-        super(AuthorAccount, self).__init__(account_id, username, password)
+        super(AuthorAccount, self).__init__(account_id, username, password, Account.Role.AUTHOR)
         self.__client = pymongo.MongoClient("mongodb+srv://"+urllib.parse.quote_plus("USER2")+":"+urllib.parse.quote_plus("1q2w3e4r")+"@cluster0-tk7v1.mongodb.net/test?retryWrites=true&w=majority")
 
     def login(self, username, password):

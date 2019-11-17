@@ -10,5 +10,3 @@ mydict = {"name": "John", "address": "Highway 37"}
 x = col.insert_one(mydict)
 print(cli)
 
-
-

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from pymongo.database import Database
+from pymongo.database import Collection
 from typing import TypeVar
 
 
@@ -16,23 +16,22 @@ class List(ABC):
     # ----------
     # Attributes
     # ----------
-    __mongo = None
-    __entries = None
+    _collection = None
+    _entries = None
     E = TypeVar('E')
 
     # ------------
     # Constructors
     # ------------
-    def __init__(self, mongo: Database, entry_class: E):
+    def __init__(self, mongo: Collection):
         """
         Creates a new List instance. All subclasses should default to this.
-        :param mongo: Database MongoDB to pull from.
-        :param entry_class: __class__ Class of the __entries being used.
+        :param mongo: Collection from MongoDB to interact with.
         """
-        self.__mongo = mongo
-        self.__entry_type = entry_class
-        self.__entries = dict()
-        self.populate_list()
+        if self._entries is None:
+            self._collection = mongo
+            self._entries = dict()
+            self.populate_list()
 
     # --------------------------
     # Methods for Concrete Class
@@ -56,10 +55,11 @@ class List(ABC):
         pass
 
     @abstractmethod
-    def mongo_update_entry(self, entry: E):
+    def mongo_update_entry(self, old_entry: E, new_entry: E):
         """
         Updates an existing entry in the Mongo Database.
-        :param entry: Instance of the entry to update in the database.
+        :param old_entry: Instance of the entry to override in the database.
+        :param new_entry: Instance of the entry to enter into the database.
         :return: void.
         """
         pass
@@ -70,6 +70,15 @@ class List(ABC):
         Pulls existing information from the Mongo Database and creates all of the instances that should exist for the
         List's corresponding object type. Should only be called by the constructor.
         :return: void.
+        """
+        pass
+
+    @abstractmethod
+    def get_json_list(self):
+        """
+        Creates and returns a JSON file representing the Dictionary for the List object. The first JSON object will be
+        the lowercase name of the type of entry being stored.
+        :return: JSON file representing the collection.
         """
         pass
 
@@ -84,10 +93,10 @@ class List(ABC):
         :param entry: Instance of the entry to add to the List.
         :return: void.
         """
-        if entry_id in self.__entries:
+        if entry_id in self._entries:
             return False
         else:
-            self.__entries[entry_id] = entry
+            self._entries[entry_id] = entry
             self.mongo_save_entry(entry)
             return True
 
@@ -98,10 +107,10 @@ class List(ABC):
         :param entry_id: int ID of the entry to delete.
         :return: void.
         """
-        if id not in self.__entries:
+        if id not in self._entries:
             return False
         else:
-            self.mongo_delete_entry(self.__entries.pop(entry_id))
+            self.mongo_delete_entry(self._entries.pop(entry_id))
             return True
 
     def update_entry(self, entry_id: int, entry: E):
@@ -112,23 +121,15 @@ class List(ABC):
         :param entry: Instance of the entry to update in the List.
         :return: void.
         """
-        if id not in self.__entries:
+        if id not in self._entries:
             return False
         else:
-            self.__entries[entry_id] = entry
-            self.mongo_update_entry(entry)
+            self.mongo_update_entry(self._entries[entry_id], entry)
+            self._entries[entry_id] = entry
 
-    def get_entry(self, entry_id: int):
+    def get_list(self):
         """
-        Gets the instance of an object to the corresponding ID.
-        :param entry_id: int ID of the desired instance.
-        :return: Instance of the corresponding entry, NULL if the entry does not exist.
+        Gets the dictionary from the List object.
+        :return: Dictionary from the List, mapping int ID to a corresponding Object.
         """
-        return self.__entries[entry_id]
-
-    def get_key(self):
-        """
-        Gets a list of all the keys (IDs for the __entries) of the List instance.
-        :return: Collection of all the keys for the Dictionary.
-        """
-        return self.__entries.keys()
+        return self._entries

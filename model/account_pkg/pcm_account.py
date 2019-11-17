@@ -4,7 +4,7 @@ from model.account_pkg.account import Account
 class PCMAccount(Account):
 
     def __init__(self, account_id: int, username: str, password: str):
-        super(PCMAccount, self).__init__(account_id, username, password)
+        super(PCMAccount, self).__init__(account_id, username, password, Account.Role.PCM)
 
     def login(self, username: str, password: str):
         pass

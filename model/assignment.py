@@ -40,12 +40,15 @@ class Assignment(Subject):
     # -------
     def pcm_volunteer(self, pcm):
         if self.status == Assignment.Status.COMPLETED:
-            return
+            return False
         elif pcm in self.reviews.key():
-            return
+            if self.reviews[pcm] == -1:
+                return True
+            else:
+                return False
         else:
             self.reviews[pcm] = -1
-        pass
+            return True
 
     def pcm_remove_volunteer(self, pcm):
         pass
