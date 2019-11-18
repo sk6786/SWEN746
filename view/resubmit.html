@@ -16,31 +16,23 @@
          var files = '{{ files|tojson }}';
          var files = JSON.parse(files);
          for (var item of files) {
-            $('#files').html('<tr> <td>'+ item['title'] + '</td><td>' + item['version']+ '</td><td>' + '<input type="file" class="form-control-file resubmit" id="fileUpload" accept=".doc,.pdf"></td></tr>');
+            $('#files').html('<tr><td class="paperId" style="display:none">'+ item['id'] + '</td><td>'+ item['title'] + '</td><td>' + item['version']+ '</td><td>' + '<input type="file" class="form-control-file resubmit" id="fileUpload" accept=".doc,.pdf"></td></tr>');
 
         }
     });
-    $(function(){
-        $('.resubmit').change(function(){
+    $(function() {
+        $('.resubmit').change(function () {
             var $row = $(this).closest("tr"),       // Finds the closest row <tr>
-                $tds = $row.find("td");             // Finds all children <td> elements
-            lst = [];
-            $.each($tds, function() {               // Visits every single <td> element
-                lst.push($(this).text());        // Prints out the text within the <td>
+                $tds = $row.find(".paperId").text();          // Finds all children <td> elements
+            $.getJSON('/resubmitPaper', {
+                paperId: $tds
+            }, function (data) {
+                alert("successfully uploaded");
+                location.reload();
             });
-            console.log(lst);
-            $.ajax({
-              type: 'POST',
-              url: "/resubmitPaper",
-              data: lst,
-              dataType: "text",
-              success: function(data){
-                         alert("successfully uploaded");
-                         location.reload()
-                       }
-            });
-        })
+        });
     });
+
 </script>
 <body>
 
