@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../static/style.css" rel="stylesheet">
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+</head>
+<script>
+    $(function(){
+         var files = '{{ files|tojson }}';
+         var files = JSON.parse(files);
+         for (var item of files) {
+            $('#files').html('<tr> <td>'+ item['title'] + '</td><td>' + item['version']+ '</td><td>' + '<input type="file" class="form-control-file resubmit" id="fileUpload" accept=".doc,.pdf"></td></tr>');
+
+        }
+    });
+    $(function(){
+        $('.resubmit').change(function(){
+            var $row = $(this).closest("tr"),       // Finds the closest row <tr>
+                $tds = $row.find("td");             // Finds all children <td> elements
+            lst = [];
+            $.each($tds, function() {               // Visits every single <td> element
+                lst.push($(this).text());        // Prints out the text within the <td>
+            });
+            console.log(lst);
+            $.ajax({
+              type: 'POST',
+              url: "/resubmitPaper",
+              data: lst,
+              dataType: "text",
+              success: function(data){
+                         alert("successfully uploaded");
+                         location.reload()
+                       }
+            });
+        })
+    });
+</script>
+<body>
+
+{% include 'layout.html' %}
+<div class="container">
+    <h2 style="text-align: center; margin-top: 20px">
+        Paper List
+    </h2>
+    <table class="table table-bordered table-dark">
+  <thead>
+    <tr>
+      <th scope="col">Paper Title</th>
+      <th scope="col">Version</th>
+      <th scope="col">Action</th>
+
+    </tr>
+  </thead>
+  <tbody id="files">
+
+  </tbody>
+</table>
+
+
+    </div>
+
+</body>
+</html>
