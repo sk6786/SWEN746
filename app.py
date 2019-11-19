@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from controller import register as Register
 from model.account_pkg import author_account as author
 from flask import jsonify
@@ -56,12 +56,22 @@ def register():
 
 @app.route('/uploadfile', methods=['GET', 'POST'])
 def upload_file():
+    allowed_extensions = {'pdf', 'doc', 'docx'}
+    ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
+                     'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
     if request.method == 'POST':
         title= request.form['title']
         topic = request.form['topic']
         version = request.form['version']
-        mongo.save_file(title, request.files["fileUpload"])
-        #add code to add file to the db
+        fl = request.files['fileUpload']
+        ext = fl.filename.rsplit('.', 1)[1].lower()
+        if ext in allowed_extensions:
+            mongo.save_file(title, fl, content_type=ext_mime_type[ext])
+        else:
+            # TODO: show wrong file type error message
+            pass
+
+        # add code to add file to the db
         return redirect(url_for('home'))
     return render_template("/upload_file.html")
 
