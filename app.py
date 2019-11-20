@@ -68,8 +68,8 @@ def upload_file():
         if ext in allowed_extensions:
             mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
-            # TODO: show wrong file type error message
-            pass
+            error = 'Invalid File Type'
+            return render_template("/upload_file.html",error=error)
 
         # add code to add file to the db
         return redirect(url_for('home'))

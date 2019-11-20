@@ -36,7 +36,12 @@
 		return false;
 	});
 });
-
+    $(function(){
+        let err = '{{ error }}';
+        if (err) {
+            alert(err)
+        }
+    });
 
 
     </script>
@@ -61,7 +66,7 @@
 
     <div class="form-group">
     <label for="fileUpload">File Upload</label>
-    <input type="file" class="form-control-file" name="fileUpload" accept=".doc,.pdf" required>
+    <input type="file" class="form-control-file" name="fileUpload" accept=".doc,.pdf, .docx" required>
   </div>
     <div class="form-group">
     <label for="authors">Author(s)</label>
@@ -72,25 +77,5 @@
 </form>
     </div>
 
-<!--<div class="container" style="padding-left: 30px">-->
-	<!--<div class="row">-->
-        <!--<div class="control-group" entry_id="fields">-->
-            <!--<label class="control-label" for="field1">Author(s)</label>-->
-            <!--<div class="controls">-->
-                <!--<form role="form" autocomplete="off">-->
-                    <!--<div class="entry input-group col-xs-3" style="margin-bottom:5px">-->
-                        <!--<input class="form-control" name="fields[]" type="text" placeholder="Type something" />-->
-                    	<!--<span class="input-group-btn">-->
-                            <!--<button class="btn btn-success btn-add" type="button">-->
-                                <!--<span class="fa fa-plus"></span>-->
-                            <!--</button>-->
-                        <!--</span>-->
-                    <!--</div>-->
-                <!--</form>-->
-            <!--<br>-->
-            <!--</div>-->
-        <!--</div>-->
-	<!--</div>-->
-<!--</div>-->
 </body>
 </html>
