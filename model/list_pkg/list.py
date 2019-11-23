@@ -107,7 +107,7 @@ class List(ABC):
         :param entry_id: int ID of the entry to delete.
         :return: void.
         """
-        if id not in self._entries:
+        if entry_id not in self._entries:
             return False
         else:
             self.mongo_delete_entry(self._entries.pop(entry_id))
@@ -121,7 +121,7 @@ class List(ABC):
         :param entry: Instance of the entry to update in the List.
         :return: void.
         """
-        if id not in self._entries:
+        if entry_id not in self._entries:
             return False
         else:
             self.mongo_update_entry(self._entries[entry_id], entry)

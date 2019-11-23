@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../static/style.css" rel="stylesheet">
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+</head>
+<script>
+    $(function(){
+         var accounts = '{{ account_lst|tojson }}';
+         var accounts = JSON.parse(accounts);
+         for (var item of accounts) {
+            $('#account_lst').append('<tr><td class="accountId">'+ item['accountID'] + '</td><td>' + item['username']+ '</td><td>' + item['role']+ '</td><td><button class="btn btn-primary editAccount">Edit</button></td><td><button class="btn btn-danger deleteAccount">Delete</button></td></tr>');
+
+        }
+    });
+    $(function() {
+        $('.editAccount').click(function () {
+            var $row = $(this).closest("tr"),       // Finds the closest row <tr>
+                $tds = $row.find(".accountId").text();          // Finds all children <td> elements
+            $("#acc_id").val($tds);
+            document.edit_acc.submit();
+        });
+    });
+
+    $(function() {
+        $('.deleteAccount').click(function () {
+            var $row = $(this).closest("tr"),       // Finds the closest row <tr>
+                $tds = $row.find(".accountId").text();          // Finds all children <td> elements
+            $.getJSON('/deleteAccount', {
+                accountId: $tds
+            }, function (data) {
+                alert(data['code']);
+                location.reload();
+            });
+        });
+    });
+    $(function() {
+        $('.resubmit').change(function () {
+            var $row = $(this).closest("tr"),       // Finds the closest row <tr>
+                $tds = $row.find(".accountId").text();          // Finds all children <td> elements
+            $.getJSON('/resubmitPaper', {
+                paperId: $tds
+            }, function (data) {
+                alert("successfully uploaded");
+                location.reload();
+            });
+        });
+    });
+
+</script>
+<body>
+
+{% include 'layout.html' %}
+<div class="container">
+    <h2 style="text-align: center; margin-top: 20px">
+        Account List
+    </h2>
+    <table class="table table-bordered table-dark">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Email</th>
+      <th scope="col">Role</th>
+        <th scope="col">Edit</th>
+        <th scope="col">Delete</th>
+
+    </tr>
+  </thead>
+  <tbody id="account_lst">
+
+  </tbody>
+</table>
+    <button class ="btn btn-primary" onclick="location.href = '/addAccount'">Add Account</button>
+    <form action="" method="post" name="edit_acc" style="visibility:hidden" >
+        <div class="">
+			<label for="acc_id">acc_id</label>
+			<input type="text" class="form-control" placeholder="acc_id" name="acc_id" id ="acc_id" value="" required>
+        </div>
+    </form>
+
+
+    </div>
+
+</body>
+</html>

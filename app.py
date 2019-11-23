@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from controller import register as Register
 from model.account_pkg import author_account as author
 from flask import jsonify
+from model.list_pkg import account_list as account_list
 import pymongo
 import urllib.parse
 from flask_pymongo import PyMongo
@@ -17,7 +17,11 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def main():
-    return redirect(url_for('login'))
+    #TODO
+    #check if authenticated
+    #check type of user
+    #if admin then render admin_home
+    return render_template('home.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -38,18 +42,67 @@ def file(filename):
 def home():
     return render_template("home.html")
 
+@app.route('/addAccount',methods=['GET', 'POST'] )
+def add_account():
+    if request.method == 'POST':
+        col = mongo.db['Accounts']
+        accounts = account_list.AccountList(col)
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        entry = accounts.create_account_entry({'username': username, 'password': password, 'role': role})
+        accounts.add_entry(entry.account_id, entry)
+        return redirect(url_for('manage_accounts'))
+    return render_template("add_account.html")
+
+
+@app.route('/manageAccounts', methods=["GET", "POST"])
+def manage_accounts():
+    if request.method == "POST":
+        entry_id = request.form['acc_id']
+        return redirect(url_for('edit_account', entry_id = entry_id))
+    col = mongo.db['Accounts']
+    accounts = account_list.AccountList(col)
+    accounts.populate_list()
+    account_lst = accounts.get_json_list()
+    return render_template("manage_accounts.html", account_lst = account_lst)
+
+@app.route('/editAccount', methods=["GET", "POST"])
+def edit_account():
+    entry_id = int(request.args.get('entry_id'))
+    col = mongo.db['Accounts']
+    accounts = account_list.AccountList(col)
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        entry = accounts.create_account_entry({'username': username, 'accountID': entry_id, 'password': password, 'role': role})
+        accounts.update_entry(entry_id, entry)
+        return redirect(url_for('manage_accounts'))
+    else:
+        entry = accounts.get_entry_json(entry_id)
+        return render_template("/edit_account.html", entry=entry)
+
+@app.route('/deleteAccount')
+def delete_account():
+    account_id = int(request.args.get('accountId'))
+    col = mongo.db['Accounts']
+    accounts = account_list.AccountList(col)
+    accounts.remove_entry(account_id)
+    return jsonify({'code': 'success'})
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     error = None
     if request.method == 'POST':
-        auth = author.AuthorAccount()
-        if auth.user_exists(request.form['email']):
+        col = mongo.db['Accounts']
+        accounts = account_list.AccountList(col)
+        if col.find_one({'username': request.form['email']}):
             error = 'Choose different username'
         else:
             #capture and send credentials to DB
-            register = author.AuthorAccount()
-            register.create_account(username=request.form['email'], password=request.form['password'])
+            entry = accounts.create_account_entry({'username': request.form['email'], 'password': request.form['password'], 'role': 'Author'})
+            accounts.add_entry(entry.account_id, entry)
             return redirect(url_for('home'))
     return render_template("/auth/register.html",error=error)
 
@@ -69,7 +122,7 @@ def upload_file():
             mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
-            return render_template("/upload_file.html",error=error)
+            return render_template("/upload_file.html", error=error)
 
         # add code to add file to the db
         return redirect(url_for('home'))

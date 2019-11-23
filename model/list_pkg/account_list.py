@@ -5,7 +5,7 @@ from model.account_pkg.author_account import AuthorAccount
 from model.account_pkg.administrator_account import AdministratorAccount
 from model.account_pkg.pcm_account import PCMAccount
 from model.account_pkg.pcc_account import PCCAccount
-
+import random
 
 class AccountList(List, Singleton):
     """
@@ -55,7 +55,7 @@ class AccountList(List, Singleton):
         """
         updated_entry = {"accountID": new_entry.account_id, "username": new_entry.username,
                          "password": new_entry.password, "role": new_entry.role.value}
-        self._collection.update_one({"accountID": old_entry.account_id}, updated_entry)
+        self._collection.update_one({"accountID": old_entry.account_id}, {"$set": updated_entry})
 
     def populate_list(self):
         """
@@ -64,21 +64,30 @@ class AccountList(List, Singleton):
         :return: void.
         """
         for entry in self._collection.find():
-            account = None
-            account_id = entry["accountID"]
-            username = entry["username"]
-            password = entry["password"]
-            role = entry["role"]
-            if role == Account.Role.AUTHOR.value:
-                account = AuthorAccount(account_id, username, password)
-            elif role == Account.Role.PCM.value:
-                account = PCMAccount(account_id, username, password)
-            elif role == Account.Role.PCC.value:
-                account = PCCAccount(account_id, username, password)
-            elif role == Account.Role.ADMIN.value:
-                account = AdministratorAccount(account_id, username, password)
+            account = self.create_account_entry(entry)
+            self._entries[entry["accountID"]] = account
 
-            self._entries[account_id] = account
+    def create_account_entry(self, entry):
+        account = None
+        account_id = entry.get("accountID", self.get_unique_account_id())
+        username = entry["username"]
+        password = entry["password"]
+        role = entry["role"]
+        if role == Account.Role.AUTHOR.value:
+            account = AuthorAccount(account_id, username, password)
+        elif role == Account.Role.PCM.value:
+            account = PCMAccount(account_id, username, password)
+        elif role == Account.Role.PCC.value:
+            account = PCCAccount(account_id, username, password)
+        elif role == Account.Role.ADMIN.value:
+            account = AdministratorAccount(account_id, username, password)
+        return account
+
+    def get_unique_account_id(self):
+        unique = random.randint(1,1000)
+        while unique in self._entries:
+            unique = random.randint
+        return unique
 
     def get_json_list(self):
         """
@@ -86,16 +95,24 @@ class AccountList(List, Singleton):
         the lowercase name of the type of entry being stored.
         :return: JSON file representing the collection.
         """
-        accounts = {}
-        first_object = "accounts"
-        accounts[first_object] = []
+        accounts = []
 
         for entry_id in self._entries.keys():
-            accounts[first_object].append({
+            accounts.append({
                 "accountID": self._entries[entry_id].account_id,
                 "username": self._entries[entry_id].username,
                 "password": self._entries[entry_id].password,
                 "role": self._entries[entry_id].role.value,
             })
-
         return accounts
+
+    def get_entry(self, entry_id: int):
+        return self._entries.get(entry_id)
+
+    def get_entry_json(self, entry_id: int):
+        return {
+                "accountID": self._entries[entry_id].account_id,
+                "username": self._entries[entry_id].username,
+                "password": self._entries[entry_id].password,
+                "role": self._entries[entry_id].role.value,
+            }
