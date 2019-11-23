@@ -9,30 +9,47 @@ app = Flask(__name__, template_folder="view")
 app.config["MONGO_URI"] = "mongodb+srv://" + urllib.parse.quote_plus("USER2") + ":" + urllib.parse.quote_plus(
     "1q2w3e4r") + "@cluster0-tk7v1.mongodb.net/SAM2020?retryWrites=true&w=majority"
 mongo = PyMongo(app)
+COLLECTION = mongo.db['Accounts']
+ACCOUNTS = account_list.AccountList(COLLECTION)
+ARTIFACT_LIST = None
 
 
-#Remove later
-# client = pymongo.MongoClient("mongodb+srv://"+urllib.parse.quote_plus("USER2")+":"+urllib.parse.quote_plus("1q2w3e4r")+"@cluster0-tk7v1.mongodb.net/test?retryWrites=true&w=majority")
-# db = client.get_database('SAME2020')
 
 @app.route('/')
 def main():
-    #TODO
-    #check if authenticated
-    #check type of user
-    #if admin then render admin_home
-    return render_template('home.html')
+    user_id = request.cookies.get('userID')
+    if user_id:
+        user = COLLECTION.find_one({"accountID": int(user_id)})
+        if user:
+            if user['role'] == "Admin":
+                return redirect(url_for("manage_accounts"))
+            return render_template('home.html', user=user)
+        else:
+            return redirect(url_for('login'))
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     if request.method == 'POST':
-        auth = author.AuthorAccount()
-        if not auth.login(request.form['email'],request.form['password']):
+        if not COLLECTION.find_one({'username': request.form['email'], 'password': request.form['password']}):
             error = 'Invalid username or password'
         else:
-            return redirect(url_for('home'))
-    return render_template('auth/login.html', error=error)
+            user = COLLECTION.find_one({'username': request.form['email'], 'password': request.form['password']})
+            response = redirect(url_for('home'))
+            response.set_cookie('userID', str(user['accountID']))
+            return response
+    return render_template('auth/login.html', error=error, login=True)
+
+@app.route('/logout')
+def logout():
+    user = COLLECTION.find_one({'accountID':int(request.cookies.get('userID'))})
+    resp = redirect(url_for('login'))
+    resp.set_cookie('userID', str(user['accountID']), expires=0)
+    return resp
+
+
 
 @app.route('/file/<filename>')
 def file(filename):
@@ -40,18 +57,16 @@ def file(filename):
 
 @app.route('/home')
 def home():
-    return render_template("home.html")
+    return redirect(url_for("main"))
 
 @app.route('/addAccount',methods=['GET', 'POST'] )
 def add_account():
     if request.method == 'POST':
-        col = mongo.db['Accounts']
-        accounts = account_list.AccountList(col)
         username = request.form['username']
         password = request.form['password']
         role = request.form['role']
-        entry = accounts.create_account_entry({'username': username, 'password': password, 'role': role})
-        accounts.add_entry(entry.account_id, entry)
+        entry = ACCOUNTS.create_account_entry({'username': username, 'password': password, 'role': role})
+        ACCOUNTS.add_entry(entry.account_id, entry)
         return redirect(url_for('manage_accounts'))
     return render_template("add_account.html")
 
@@ -61,26 +76,22 @@ def manage_accounts():
     if request.method == "POST":
         entry_id = request.form['acc_id']
         return redirect(url_for('edit_account', entry_id = entry_id))
-    col = mongo.db['Accounts']
-    accounts = account_list.AccountList(col)
-    accounts.populate_list()
-    account_lst = accounts.get_json_list()
+    ACCOUNTS.populate_list()
+    account_lst = ACCOUNTS.get_json_list()
     return render_template("manage_accounts.html", account_lst = account_lst)
 
 @app.route('/editAccount', methods=["GET", "POST"])
 def edit_account():
     entry_id = int(request.args.get('entry_id'))
-    col = mongo.db['Accounts']
-    accounts = account_list.AccountList(col)
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
         role = request.form['role']
-        entry = accounts.create_account_entry({'username': username, 'accountID': entry_id, 'password': password, 'role': role})
-        accounts.update_entry(entry_id, entry)
+        entry = ACCOUNTS.create_account_entry({'username': username, 'accountID': entry_id, 'password': password, 'role': role})
+        ACCOUNTS.update_entry(entry_id, entry)
         return redirect(url_for('manage_accounts'))
     else:
-        entry = accounts.get_entry_json(entry_id)
+        entry = ACCOUNTS.get_entry_json(entry_id)
         return render_template("/edit_account.html", entry=entry)
 
 @app.route('/deleteAccount')
@@ -95,16 +106,14 @@ def delete_account():
 def register():
     error = None
     if request.method == 'POST':
-        col = mongo.db['Accounts']
-        accounts = account_list.AccountList(col)
-        if col.find_one({'username': request.form['email']}):
+        if COLLECTION.find_one({'username': request.form['email']}):
             error = 'Choose different username'
         else:
             #capture and send credentials to DB
-            entry = accounts.create_account_entry({'username': request.form['email'], 'password': request.form['password'], 'role': 'Author'})
-            accounts.add_entry(entry.account_id, entry)
+            entry = ACCOUNTS.create_account_entry({'username': request.form['email'], 'password': request.form['password'], 'role': 'Author'})
+            ACCOUNTS.add_entry(entry.account_id, entry)
             return redirect(url_for('home'))
-    return render_template("/auth/register.html",error=error)
+    return render_template("/auth/register.html",error=error, login=True)
 
 
 @app.route('/uploadfile', methods=['GET', 'POST'])
