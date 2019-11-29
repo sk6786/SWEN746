@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../static/style.css" rel="stylesheet">
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+{% include 'layout.html' %}
+    <div class="container">
+        <h2 style="...">
+            Paper Rating
+        </h2>
+        <br><br><br>
+        <form method="post"  enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="review1">Review 1</label> &nbsp;&nbsp;
+                <button class="btn"><i class="fa fa-download"></i> Download</button>
+            </div>
+            <br>
+        <div class="form-group">
+                <label for="review2">Review 2</label> &nbsp;&nbsp;
+                <button class="btn"><i class="fa fa-download"></i> Download</button>
+            </div>
+            <br>
+        <div class="form-group">
+                <label for="review3">Review 3</label> &nbsp;&nbsp;
+                <button class="btn"><i class="fa fa-download"></i> Download</button>
+            </div>
+            <br>
+        <div class="form-group">
+        <label for="rating">Rating</label>
+        <textarea class="form-control" id="rating" rows="3" required></textarea>
+    </div>
+            <div style="...">
+                <button class="btn btn-primary" onclick="location.href = '/'">
+                    Back
+        </button> &nbsp;
+                <button class="btn btn-primary" onclick="location.href = '/notifications'">
+                    Review
+        </button> &nbsp;
+                <button class="btn btn-primary" onclick="location.href = '/'">
+                    Submit
+        </button> &nbsp;
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -19,14 +19,26 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto" id="nav">
-          <li class="nav-item active" id = "home">
-            <a class="nav-link" href="/">Home
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item" id = "login">
-            <a class="nav-link" href="login">Login</a>
-          </li>
+            {% if login %}
+              <li class="nav-item" id = "home">
+                <a class="nav-link" href="/">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item active" id = "login">
+                <a class="nav-link" href="/login">Login</a>
+            </li>
+            {%else%}
+            <li class="nav-item active" id = "home">
+                <a class="nav-link" href="/">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item" id = "logout">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+
+            {%endif%}
 
         </ul>
       </div>

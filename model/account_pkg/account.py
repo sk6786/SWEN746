@@ -14,11 +14,6 @@ class Account(ABC):
         PCC = "PCC"
         ADMIN = "Admin"
 
-    account_id = None
-    username = None
-    password = None
-    role = None
-
     def __init__(self, account_id: int, username: str, password: str, role: Role):
         self.account_id = account_id
         self.username = username

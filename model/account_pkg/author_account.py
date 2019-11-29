@@ -34,12 +34,6 @@ class AuthorAccount(Account):
         res = col.find_one({"username": username})
         return res['role']
 
-    def create_account(self, username, password):
-        db = self.__client.get_database("SAM2020")
-        col = db.get_collection("Accounts")
-        mydict = {"username": username, "password": password, "role": "author"}
-        col.insert_one(mydict)
-
     def change_password(self, oldpass: str, newpass: str):
         pass
 
