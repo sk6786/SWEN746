@@ -5,7 +5,7 @@ from model.account_pkg.author_account import AuthorAccount
 from model.account_pkg.administrator_account import AdministratorAccount
 from model.account_pkg.pcm_account import PCMAccount
 from model.account_pkg.pcc_account import PCCAccount
-import random
+
 
 class AccountList(List, Singleton):
     """
@@ -64,12 +64,18 @@ class AccountList(List, Singleton):
         :return: void.
         """
         for entry in self._collection.find():
-            account = self.create_account_entry(entry)
+            account = self.create_entry_object(entry)
             self._entries[entry["accountID"]] = account
 
-    def create_account_entry(self, entry):
+    def create_entry_object(self, entry):
+        """
+        Create and return an instance of an object. Parses the parameters to create an instance of the object. This does
+        not add the object to the collection if called directly.
+        :param entry: Hash of information to create the object.
+        :return: Instance of the appropriate object based on the type of List.
+        """
         account = None
-        account_id = entry.get("accountID", self.get_unique_account_id())
+        account_id = entry.get("accountID", self.create_unique_id())
         username = entry["username"]
         password = entry["password"]
         role = entry["role"]
@@ -83,13 +89,7 @@ class AccountList(List, Singleton):
             account = AdministratorAccount(account_id, username, password)
         return account
 
-    def get_unique_account_id(self):
-        unique = random.randint(1,1000)
-        while unique in self._entries:
-            unique = random.randint
-        return unique
-
-    def get_json_list(self):
+    def get_list_json(self):
         """
         Creates and returns a JSON file representing the Dictionary for the List object. The first JSON object will be
         the lowercase name of the type of entry being stored.
@@ -106,10 +106,12 @@ class AccountList(List, Singleton):
             })
         return accounts
 
-    def get_entry(self, entry_id: int):
-        return self._entries.get(entry_id)
-
     def get_entry_json(self, entry_id: int):
+        """
+        Create and return a JSON representing the entry at the corresponding id location.
+        :param entry_id: int id of the entry.
+        :return: JSON format for the entry.
+        """
         return {
                 "accountID": self._entries[entry_id].account_id,
                 "username": self._entries[entry_id].username,

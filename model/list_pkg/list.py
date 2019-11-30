@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from pymongo.database import Collection
 from typing import TypeVar
+from pymongo.database import Collection
+import random
 
 
 class List(ABC):
@@ -16,9 +17,8 @@ class List(ABC):
     # ----------
     # Attributes
     # ----------
-    _collection = None
-    _entries = None
     E = TypeVar('E')
+    _entries = None
 
     # ------------
     # Constructors
@@ -74,11 +74,30 @@ class List(ABC):
         pass
 
     @abstractmethod
-    def get_json_list(self):
+    def get_list_json(self):
         """
         Creates and returns a JSON file representing the Dictionary for the List object. The first JSON object will be
         the lowercase name of the type of entry being stored.
         :return: JSON file representing the collection.
+        """
+        pass
+
+    @abstractmethod
+    def get_entry_json(self, entry_id: int):
+        """
+        Create and return a JSON representing the entry at the corresponding id location.
+        :param entry_id: int id of the entry.
+        :return: JSON format for the entry.
+        """
+        pass
+
+    @abstractmethod
+    def create_entry_object(self, entry):
+        """
+        Create and return an instance of an object. Parses the parameters to create an instance of the object. This does
+        not add the object to the collection if called directly.
+        :param entry: Hash of information to create the object.
+        :return: Instance of the appropriate object based on the type of List.
         """
         pass
 
@@ -133,3 +152,21 @@ class List(ABC):
         :return: Dictionary from the List, mapping int ID to a corresponding Object.
         """
         return self._entries
+
+    def get_entry(self, entry_id: int):
+        """
+        Gets the corresponding entry to the object id.
+        :param entry_id: int id of the entry.
+        :return: The corresponding entry in the hash, None if the entry does not exist.
+        """
+        return self._entries.get(entry_id)
+
+    def create_unique_id(self):
+        """
+        Creates and returns a new id to be used in the list.
+        :return: int number that does not exist as a key.
+        """
+        unique = random.randint(1,1000)
+        while unique in self._entries:
+            unique = random.randint
+        return unique

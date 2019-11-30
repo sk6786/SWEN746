@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from model.observer_pkg.subject import Subject
 
 
 class Observer:
@@ -8,7 +7,7 @@ class Observer:
     """
 
     @abstractmethod
-    def update(self, subject: Subject):
+    def update(self):
         """
         Force the Observer to update according to the Subject that called it.
         :param subject: Subject that is updating the Observer.

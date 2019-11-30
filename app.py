@@ -1,18 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from model.account_pkg import author_account as author
 from flask import jsonify
 from model.list_pkg import account_list as account_list
-import pymongo
+from model.list_pkg import artifact_list as artifact_list
 import urllib.parse
 from flask_pymongo import PyMongo
 app = Flask(__name__, template_folder="view")
 app.config["MONGO_URI"] = "mongodb+srv://" + urllib.parse.quote_plus("USER2") + ":" + urllib.parse.quote_plus(
     "1q2w3e4r") + "@cluster0-tk7v1.mongodb.net/SAM2020?retryWrites=true&w=majority"
 mongo = PyMongo(app)
+ARTIFACT_COLLECTION = mongo.db['Artifacts']
 COLLECTION = mongo.db['Accounts']
-ACCOUNTS = account_list.AccountList(COLLECTION)
-ARTIFACT_LIST = None
 
+ARTIFACTS = artifact_list.ArtifactList(mongo.db['Artifacts'])
+ACCOUNTS = account_list.AccountList(COLLECTION)
+
+COLLECTION = mongo.db['Accounts']
 
 
 @app.route('/')
@@ -65,7 +67,7 @@ def add_account():
         username = request.form['username']
         password = request.form['password']
         role = request.form['role']
-        entry = ACCOUNTS.create_account_entry({'username': username, 'password': password, 'role': role})
+        entry = ACCOUNTS.create_entry_object({'username': username, 'password': password, 'role': role})
         ACCOUNTS.add_entry(entry.account_id, entry)
         return redirect(url_for('manage_accounts'))
     return render_template("add_account.html")
@@ -77,7 +79,7 @@ def manage_accounts():
         entry_id = request.form['acc_id']
         return redirect(url_for('edit_account', entry_id = entry_id))
     ACCOUNTS.populate_list()
-    account_lst = ACCOUNTS.get_json_list()
+    account_lst = ACCOUNTS.get_list_json()
     return render_template("manage_accounts.html", account_lst = account_lst)
 
 @app.route('/editAccount', methods=["GET", "POST"])
@@ -87,7 +89,7 @@ def edit_account():
         username = request.form['username']
         password = request.form['password']
         role = request.form['role']
-        entry = ACCOUNTS.create_account_entry({'username': username, 'accountID': entry_id, 'password': password, 'role': role})
+        entry = ACCOUNTS.create_entry_object({'username': username, 'accountID': entry_id, 'password': password, 'role': role})
         ACCOUNTS.update_entry(entry_id, entry)
         return redirect(url_for('manage_accounts'))
     else:
@@ -110,7 +112,7 @@ def register():
             error = 'Choose different username'
         else:
             #capture and send credentials to DB
-            entry = ACCOUNTS.create_account_entry({'username': request.form['email'], 'password': request.form['password'], 'role': 'Author'})
+            entry = ACCOUNTS.create_entry_object({'username': request.form['email'], 'password': request.form['password'], 'role': 'Author'})
             ACCOUNTS.add_entry(entry.account_id, entry)
             return redirect(url_for('home'))
     return render_template("/auth/register.html",error=error, login=True)
