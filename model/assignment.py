@@ -35,11 +35,28 @@ class Assignment:
         self.author = author
         self.pcc = pcc
         self.report = report
-        super(Assignment, self).__init__()
 
     # -------
     # Methods
     # -------
+    def create_assignment_hash(self):
+        review_string = ""
+
+        for pcm in self.reviews:
+            review_string += str(pcm.get_id()) + "-" + str(self.reviews[pcm])
+
+        return {"assignmentID": self.assignment_id,
+                "status": self.status.value,
+                "paperID": self.paper.get_id(),
+                "reviews": review_string,
+                "authorID": self.author.get_id(),
+                "pccID": self.pcc.get_id(),
+                "reportID": self.report.get_id()
+                }
+
+    def get_id(self):
+        return self.assignment_id
+
     def pcm_volunteer(self, pcm: Account):
         if self.reviews[pcm] == Assignment.CurrentEnrollment.ASSIGNED:
             return
