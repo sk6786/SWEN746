@@ -18,7 +18,6 @@ ACCOUNTS = AccountList()
 ASSIGNMENTS = AssignmentList()
 TEMPLATES = TemplateList()
 
-
 @app.route('/')
 def main():
     user_id = request.cookies.get('userID')
@@ -26,12 +25,23 @@ def main():
         user = COLLECTION.find_one({"accountID": int(user_id)})
         if user:
             if user['role'] == "Admin":
-                return redirect(url_for("manage_accounts"))
+                return redirect(url_for("admin_home"))
             return render_template('home.html', user=user)
         else:
             return redirect(url_for('login'))
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/adminHome', methods=['GET', 'POST'])
+def admin_home():
+    return render_template('admin_home.html')
+
+
+@app.route('/notification', methods=['GET', 'POST'])
+def notification():
+    return render_template('notification.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -46,6 +56,7 @@ def login():
             return response
     return render_template('auth/login.html', error=error, login=True)
 
+
 @app.route('/logout')
 def logout():
     user = COLLECTION.find_one({'accountID':int(request.cookies.get('userID'))})
@@ -54,14 +65,15 @@ def logout():
     return resp
 
 
-
 @app.route('/file/<filename>')
 def file(filename):
     return mongo.send_file(filename)
 
+
 @app.route('/home')
 def home():
     return redirect(url_for("main"))
+
 
 @app.route('/addAccount',methods=['GET', 'POST'] )
 def add_account():
@@ -84,6 +96,7 @@ def manage_accounts():
     account_lst = ACCOUNTS.get_list_json()
     return render_template("manage_accounts.html", account_lst = account_lst)
 
+
 @app.route('/editAccount', methods=["GET", "POST"])
 def edit_account():
     entry_id = int(request.args.get('entry_id'))
@@ -105,6 +118,7 @@ def delete_account():
     accounts = account_list.AccountList(col)
     accounts.remove_entry(account_id)
     return jsonify({'code': 'success'})
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -141,13 +155,21 @@ def upload_file():
         return redirect(url_for('home'))
     return render_template("/upload_file.html")
 
+
 @app.route('/forgot_password')
 def forgot_password():
     return render_template("/auth/forgot_password.html")
 
+@app.route('/review_page')
+def review_page():
+    #retrive from DB
+    return render_template("/review_page.html")
+
+
 @app.route('/resubmit')
 def resubmit():
     return render_template("/resubmit.html", files = [{'id':'1223','title':'saad', 'version': '234', 'paperId':'123'},{'id':'1223','title':'saad', 'version': '234', 'paperid': '3122'}])
+
 
 @app.route('/resubmitPaper', methods=['GET', 'POST'])
 def resubmitPaper():

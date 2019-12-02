@@ -13,29 +13,7 @@
 </head>
 <body>
 <script>
-    $(function()
-{
-    $(document).on('click', '.btn-add', function(e)
-    {
-        e.preventDefault();
 
-        var controlForm = $('.controls form:first'),
-            currentEntry = $(this).parents('.entry:first'),
-            newEntry = $(currentEntry.clone()).appendTo(controlForm);
-
-        newEntry.find('input').val('');
-        controlForm.find('.entry:not(:last) .btn-add')
-            .removeClass('btn-add').addClass('btn-remove')
-            .removeClass('btn-success').addClass('btn-danger')
-            .html('<span class="fa fa-minus"></span>');
-    }).on('click', '.btn-remove', function(e)
-    {
-		$(this).parents('.entry:first').remove();
-
-		e.preventDefault();
-		return false;
-	});
-});
     $(function(){
         let err = '{{ error }}';
         if (err) {
@@ -43,12 +21,11 @@
         }
     });
 
-
     </script>
 {% include 'layout.html' %}
 <div class="container">
     <h2 style="text-align: center; margin-top: 20px">
-        New Paper Submission
+        Notifications
     </h2>
 <form method="post"  enctype="multipart/form-data">
     <div class="form-group">
@@ -56,21 +33,12 @@
     <input type="text" class="form-control" name="title" placeholder="mm/dd/yyyy" required>
   </div>
     <div class="form-group">
-    <label for="reviewSubmission"></label>
+    <label for="pcmSubmission">PCM Submission Deadline</label>
     <input type="text" class="form-control" name="topic" placeholder="mm/dd/yyyy" required>
   </div>
     <div class="form-group">
-    <label for="version">Version</label>
-    <input type="number" class="form-control" name="version" placeholder="1.0" required>
-  </div>
-
-    <div class="form-group">
-    <label for="fileUpload">File Upload</label>
-    <input type="file" class="form-control-file" name="fileUpload" accept=".doc,.pdf, .docx" required>
-  </div>
-    <div class="form-group">
-    <label for="authors">Author(s)</label>
-    <textarea class="form-control" id="authors" rows="3" required></textarea>
+    <label for="pccSubmission">PCC Submission Deadline</label>
+    <input type="text" class="form-control" name="topic" placeholder="mm/dd/yyyy" required>
   </div>
 
 	<input type="submit" value="Submit" class="btn btn-primary float-left">

@@ -19,6 +19,12 @@
 
 </head>
 <script>
+    $(document).ready(function () {
+    change_nav();
+    });
+    function change_nav(){
+    $('#login a').html('Logout')
+    }
 
 </script>
 
@@ -33,11 +39,11 @@
       <div class="col-lg-12 text-center landDiv">
         <h1 class="mt-5">Welcome to Sam 2020 Conference</h1>
         <div style="margin-top: 20px  ">
-        <button class="btn btn-light" onclick="location.href = '/notification'">
-          Handle Notifications
+        <button class="btn btn-light" onclick="location.href = '/select_Page'">
+          Select a paper
         </button>
-        <button class="btn btn-dark" onclick="location.href = '/manageAccounts'">
-          Manage Accounts
+        <button class="btn btn-dark" onclick="location.href = '/review_Page'">
+          Review a paper
         </button>
         </div>
       </div>
