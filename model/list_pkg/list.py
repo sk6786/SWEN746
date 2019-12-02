@@ -23,7 +23,7 @@ class List(ABC):
     # ------------
     # Constructors
     # ------------
-    def __init__(self, mongo: Collection):
+    def __init__(self, mongo):
         """
         Creates a new List instance. All subclasses should default to this.
         :param mongo: Collection from MongoDB to interact with.

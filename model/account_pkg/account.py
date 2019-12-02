@@ -21,6 +21,9 @@ class Account(ABC):
         self.role = role
         self.__client = pymongo.MongoClient("mongodb+srv://"+urllib.parse.quote_plus("USER2")+":"+urllib.parse.quote_plus("1q2w3e4r")+"@cluster0-tk7v1.mongodb.net/test?retryWrites=true&w=majority")
 
+    def get_id(self):
+        return self.account_id
+
     @abstractmethod
     def change_password(self, oldpass: str, newpass: str):
         pass

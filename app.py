@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask import jsonify
-from model.list_pkg import account_list as account_list
-from model.list_pkg import artifact_list as artifact_list
+from model.list_pkg.account_list import AccountList
+from model.list_pkg.artifact_list import ArtifactList
+from model.list_pkg.assignment_list import AssignmentList
+from model.list_pkg.template_list import TemplateList
 import urllib.parse
 from flask_pymongo import PyMongo
 app = Flask(__name__, template_folder="view")
@@ -11,10 +13,10 @@ mongo = PyMongo(app)
 ARTIFACT_COLLECTION = mongo.db['Artifacts']
 COLLECTION = mongo.db['Accounts']
 
-ARTIFACTS = artifact_list.ArtifactList(mongo.db['Artifacts'])
-ACCOUNTS = account_list.AccountList(COLLECTION)
-
-COLLECTION = mongo.db['Accounts']
+ARTIFACTS = ArtifactList()
+ACCOUNTS = AccountList()
+ASSIGNMENTS = AssignmentList()
+TEMPLATES = TemplateList()
 
 
 @app.route('/')

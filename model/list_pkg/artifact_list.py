@@ -1,3 +1,6 @@
+from flask import Flask
+import urllib.parse
+from flask_pymongo import PyMongo
 from model.list_pkg.list import List
 from model.list_pkg.singleton import Singleton
 from model.artifact import Artifact
@@ -19,7 +22,12 @@ class ArtifactList(List, Singleton):
     # ------------
     # Constructors
     # ------------
-    # See List Class
+    def __init__(self):
+        app = Flask(__name__, template_folder="view")
+        app.config["MONGO_URI"] = "mongodb+srv://" + urllib.parse.quote_plus("USER2") + ":" + urllib.parse.quote_plus(
+            "1q2w3e4r") + "@cluster0-tk7v1.mongodb.net/SAM2020?retryWrites=true&w=majority"
+        mongo = PyMongo(app)
+        super().__init__(mongo.db['Artifacts'])
 
     # -------
     # Methods
