@@ -113,9 +113,7 @@ def edit_account():
 @app.route('/deleteAccount')
 def delete_account():
     account_id = int(request.args.get('accountId'))
-    col = mongo.db['Accounts']
-    accounts = account_list.AccountList(col)
-    accounts.remove_entry(account_id)
+    ACCOUNTS.remove_entry(account_id)
     return jsonify({'code': 'success'})
 
 
