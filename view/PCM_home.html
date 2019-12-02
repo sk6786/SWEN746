@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Bare - Start Bootstrap Template</title>
+
+  <!-- Bootstrap core CSS -->
+    <link href="../static/style.css" rel="stylesheet">
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+</head>
+<script>
+    $(document).ready(function () {
+    change_nav();
+    });
+    function change_nav(){
+    $('#login a').html('Logout')
+    }
+
+</script>
+
+<body>
+
+  <!-- Navigation -->
+  {% include 'layout.html' %}
+  <!-- Page Content -->
+  <div class = "landing">
+  <div class="container">
+    <div class="row h-100">
+      <div class="col-lg-12 text-center landDiv">
+        <h1 class="mt-5">Welcome to Sam 2020 Conference</h1>
+        <div style="margin-top: 20px  ">
+        <button class="btn btn-light" onclick="location.href = '/select_Page'">
+          Select a paper
+        </button>
+        <button class="btn btn-dark" onclick="location.href = '/review_Page'">
+          Review a paper
+        </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="../static/vendor/jquery/jquery.slim.min.js"></script>
+  <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
