@@ -78,7 +78,6 @@ def manage_accounts():
     if request.method == "POST":
         entry_id = request.form['acc_id']
         return redirect(url_for('edit_account', entry_id = entry_id))
-    ACCOUNTS.populate_list()
     account_lst = ACCOUNTS.get_list_json()
     return render_template("manage_accounts.html", account_lst = account_lst)
 
@@ -124,6 +123,7 @@ def upload_file():
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
     if request.method == 'POST':
+        form = request.form
         title= request.form['title']
         topic = request.form['topic']
         version = request.form['version']
@@ -143,18 +143,28 @@ def upload_file():
 def forgot_password():
     return render_template("/auth/forgot_password.html")
 
-@app.route('/resubmit')
+@app.route('/resubmit', methods=['GET', 'POST'])
 def resubmit():
+    allowed_extensions = {'pdf', 'doc', 'docx'}
+    ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
+                     'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
+    if request.method == 'POST':
+        form = request.form
+        title = request.form['title']
+        paperId = request.form['paperID']
+        version = int(request.form['version']) + 1
+        # code to fetch the doc from the artifact list, increment version by 1
+        fl = request.files['fileUpload']
+        ext = fl.filename.rsplit('.', 1)[1].lower()
+        if ext in allowed_extensions:
+            mongo.save_file(title, fl, content_type=ext_mime_type[ext])
+        else:
+            error = 'Invalid File Type'
+            return render_template("/resubmit.html", error=error)
+        # add code to add file to the db
+        return render_template("/resubmit.html", error=200)
     return render_template("/resubmit.html", files = [{'id':'1223','title':'saad', 'version': '234', 'paperId':'123'},{'id':'1223','title':'saad', 'version': '234', 'paperid': '3122'}])
 
-@app.route('/resubmitPaper', methods=['GET', 'POST'])
-def resubmitPaper():
-    paperId = request.args.get('paperId')
-    #code to fetch the doc from the artifact list, increment version by 1
-    title = 'find from artifacts'
-    mongo.save_file(title, request.files["fileUpload"])
-    # add code to add file to the db
-    return jsonify(status='success')
 
 if __name__ == '__main__':
     app.run()
