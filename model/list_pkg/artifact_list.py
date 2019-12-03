@@ -82,7 +82,12 @@ class ArtifactList(List, Singleton):
         author_id = entry["authorID"]
         artifact_name = entry["artifactName"]
         if artifact_type == Artifact.ArtifactType.PAPER.value:
+            title = entry["title"]
+            authors = entry["authors"]
+            version = entry["version"]
+            topic = entry["topic"]
             artifact = Artifact(artifact_id, corresponding_id, Artifact.ArtifactType.PAPER, author_id, artifact_name)
+            artifact.set_paper_attributes(title, authors, version, topic)
         elif artifact_type == Artifact.ArtifactType.REVIEW.value:
             artifact = Artifact(artifact_id, corresponding_id, Artifact.ArtifactType.REVIEW, author_id, artifact_name)
         elif artifact_type == Artifact.ArtifactType.REPORT.value:
