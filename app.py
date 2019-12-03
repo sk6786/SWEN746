@@ -164,6 +164,23 @@ def review_page():
     return render_template("/review_page.html")
 
 
+@app.route('/assign_page')
+def assign_page():
+    #retrive from DB
+    return render_template("/assign_page.html")
+
+
+@app.route('/report_page')
+def report_page():
+    return render_template("/report_page.html")
+
+@app.route('/select_page')
+def select_page():
+    #retrive from DB
+    return render_template("/select_page.html")
+
+
+
 @app.route('/resubmit')
 def resubmit():
     allowed_extensions = {'pdf', 'doc', 'docx'}
