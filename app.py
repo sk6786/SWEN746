@@ -4,6 +4,7 @@ from model.list_pkg.account_list import AccountList
 from model.list_pkg.artifact_list import ArtifactList
 from model.list_pkg.assignment_list import AssignmentList
 from model.list_pkg.template_list import TemplateList
+from controller.artifact_manager import ArtifactManager
 import urllib.parse
 from flask_pymongo import PyMongo
 app = Flask(__name__, template_folder="view")
@@ -137,12 +138,18 @@ def upload_file():
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
     if request.method == 'POST':
-        title= request.form['title']
+        # TODO: get the real author id
+        author_id = 12345
+        title = request.form['title']
         topic = request.form['topic']
         version = request.form['version']
         fl = request.files['fileUpload']
-        ext = fl.filename.rsplit('.', 1)[1].lower()
+        authors = request.form['authors']
+        artifact_name = fl.filename
+        ext = artifact_name.rsplit('.', 1)[1].lower()
         if ext in allowed_extensions:
+            atf_manager = ArtifactManager()
+            atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
             mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
@@ -163,6 +170,25 @@ def review_page():
     #retrive from DB
     return render_template("/review_page.html")
 
+
+@app.route('/assign_page')
+def assign_page():
+    #retrive from DB
+    return render_template("/assign_page.html")
+
+
+@app.route('/rate_paper')
+def rate_paper():
+    return render_template("/rate_paper.html")
+@app.route('/PCC_home')
+def PCC_home():
+    # retrive from DB
+    return render_template("/PCC_home.html")
+
+@app.route('/volunteer')
+def volunteer():
+    #retrive from DB
+    return render_template("/volunteer.html")
 
 @app.route('/resubmit')
 def resubmit():

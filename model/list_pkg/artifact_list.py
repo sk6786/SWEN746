@@ -3,7 +3,8 @@ import urllib.parse
 from flask_pymongo import PyMongo
 from model.list_pkg.list import List
 from model.list_pkg.singleton import Singleton
-from model.artifact import Artifact
+from model.artifact_pkg.artifact import Artifact
+from model.artifact_pkg.paper import Paper
 
 
 class ArtifactList(List, Singleton):
@@ -65,6 +66,13 @@ class ArtifactList(List, Singleton):
         :return: void.
         """
         for entry in self._collection.find():
-            artifact = Artifact(0, 0, None, 0, "")
+            type = entry["type"]
+            artifact = None
+
+            if type == Artifact.ArtifactType.PAPER.value:
+                artifact = Paper(0, 0, None, 0, "", "", "", 0, "")
+            else:
+                artifact = Artifact(0, 0, None, 0, "")
+
             artifact.set_entry_attributes(entry)
             self._entries[entry["artifactID"]] = artifact

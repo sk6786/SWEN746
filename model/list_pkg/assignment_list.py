@@ -4,7 +4,7 @@ from flask_pymongo import PyMongo
 from model.list_pkg.list import List
 from model.list_pkg.singleton import Singleton
 from model.assignment import Assignment
-from model.artifact import Artifact
+from model.artifact_pkg.artifact import Artifact
 from model.account_pkg.author_account import AuthorAccount
 
 
