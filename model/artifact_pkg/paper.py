@@ -17,17 +17,28 @@ class Paper(Artifact):
         self._version = version
         self._topic = topic
 
-    def create_artifact_hash(self):
-        return {"artifactID": self.artifact_id,
+    def create_entry_dictionary(self):
+        return {"artifactID": self._artifact_id,
                 "correspondingID": self._corresponding_id,
                 "type": self._artifact_type.value,
                 "authorID": self._author_id,
-                "artifactName": self.artifact_name,
+                "artifactName": self._artifact_name,
                 "title": self._title,
                 "authors": self._authors,
                 "version": self._version,
                 "topic": self._topic
                 }
+
+    def set_entry_attributes(self, attributes: {}):
+        self._artifact_id = attributes.get("artifactID")
+        self._corresponding_id = attributes["correspondingID"]
+        self._author_id = attributes["authorID"]
+        self._artifact_name = attributes["artifactName"]
+        self._artifact_type = Artifact.ArtifactType.PAPER
+        self._title = attributes["title"]
+        self._authors = attributes["authors"]
+        self._version = attributes["version"]
+        self._topic = attributes["topic"]
 
 
 # a = Paper(1, 1, Artifact.ArtifactType.PAPER, 1, 'a', 'a', 'a', 1, 'a')
