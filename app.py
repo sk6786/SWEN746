@@ -157,14 +157,13 @@ def upload_file():
 def forgot_password():
     return render_template("/auth/forgot_password.html")
 
-@app.route('/resubmit', methods=['GET', 'POST'])
 @app.route('/review_page')
 def review_page():
     #retrive from DB
     return render_template("/review_page.html")
 
 
-@app.route('/resubmit')
+@app.route('/resubmit', methods=['GET', 'POST'])
 def resubmit():
     allowed_extensions = {'pdf', 'doc', 'docx'}
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
