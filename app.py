@@ -185,9 +185,6 @@ def forgot_password():
     return render_template("/auth/forgot_password.html")
 
 
-@app.route('/resubmit', methods=['GET', 'POST'])
-
-
 @app.route('/review_page')
 def review_page():
     #retrive from DB
@@ -223,14 +220,17 @@ def resubmit():
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
     if request.method == 'POST':
-        form = request.form
+        author_id = request.cookies.get('userID')
         title = request.form['title']
-        paperId = request.form['paperID']
-        version = int(request.form['version']) + 1
-        # code to fetch the doc from the artifact list, increment version by 1
+        topic = request.form['topic']
+        version = request.form['version']
         fl = request.files['fileUpload']
-        ext = fl.filename.rsplit('.', 1)[1].lower()
+        authors = request.form['authors']
+        artifact_name = fl.filename
+        ext = artifact_name.rsplit('.', 1)[1].lower()
         if ext in allowed_extensions:
+            atf_manager = ArtifactManager()
+            atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
             mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
