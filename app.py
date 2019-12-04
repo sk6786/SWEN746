@@ -23,7 +23,7 @@ ARTIFACTS = ArtifactList()
 ACCOUNTS = AccountList()
 ASSIGNMENTS = AssignmentList()
 TEMPLATES = TemplateList()
-
+atf_manager = ArtifactManager()
 
 def create_account(account_id: int, username: str, password: str, role: str):
     if role == Account.Role.AUTHOR.value:
@@ -168,7 +168,6 @@ def upload_file():
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
         if ext in allowed_extensions:
-            atf_manager = ArtifactManager()
             atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
             mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
@@ -219,17 +218,15 @@ def resubmit():
     allowed_extensions = {'pdf', 'doc', 'docx'}
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
+    author_id = request.cookies.get('userID')
     if request.method == 'POST':
-        author_id = request.cookies.get('userID')
         title = request.form['title']
-        topic = request.form['topic']
         version = request.form['version']
         fl = request.files['fileUpload']
-        authors = request.form['authors']
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
+
         if ext in allowed_extensions:
-            atf_manager = ArtifactManager()
             atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
             mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
@@ -237,7 +234,7 @@ def resubmit():
             return render_template("/resubmit.html", error=error)
         # add code to add file to the db
         return render_template("/resubmit.html", error=200)
-    return render_template("/resubmit.html", files = [{'id':'1223','title':'saad', 'version': '234', 'paperId':'123'},{'id':'1223','title':'saad', 'version': '234', 'paperid': '3122'}])
+    return render_template("/resubmit.html", files=atf_manager.get_author_paper(author_id))
 
 
 if __name__ == '__main__':
