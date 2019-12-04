@@ -3,7 +3,8 @@ import urllib.parse
 from flask_pymongo import PyMongo
 from model.list_pkg.list import List
 from model.list_pkg.singleton import Singleton
-from model.artifact import Artifact
+from model.artifact_pkg.artifact import Artifact
+from model.artifact_pkg.paper import Paper
 
 
 class ArtifactList(List, Singleton):
@@ -77,7 +78,7 @@ class ArtifactList(List, Singleton):
         """
         artifact = None
         artifact_id = entry.get("artifactID", self.create_unique_id())
-        corresponding_id = entry["correspondingID"]
+        corresponding_id = entry.get("correspondingID", artifact_id)
         artifact_type = entry["type"]
         author_id = entry["authorID"]
         artifact_name = entry["artifactName"]
@@ -86,8 +87,7 @@ class ArtifactList(List, Singleton):
             authors = entry["authors"]
             version = entry["version"]
             topic = entry["topic"]
-            artifact = Artifact(artifact_id, corresponding_id, Artifact.ArtifactType.PAPER, author_id, artifact_name)
-            artifact.set_paper_attributes(title, authors, version, topic)
+            artifact = Paper(artifact_id, corresponding_id, Artifact.ArtifactType.PAPER, author_id, artifact_name, title, authors, version, topic)
         elif artifact_type == Artifact.ArtifactType.REVIEW.value:
             artifact = Artifact(artifact_id, corresponding_id, Artifact.ArtifactType.REVIEW, author_id, artifact_name)
         elif artifact_type == Artifact.ArtifactType.REPORT.value:

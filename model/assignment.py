@@ -1,6 +1,6 @@
 import enum
 from model.account_pkg.account import Account
-from model.artifact import Artifact
+from model.artifact_pkg.artifact import Artifact
 
 
 class Assignment:
