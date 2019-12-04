@@ -159,7 +159,7 @@ def upload_file():
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
     if request.method == 'POST':
         # TODO: get the real author id
-        author_id = 12345
+        author_id = request.cookies.get('userID')
         title = request.form['title']
         topic = request.form['topic']
         version = request.form['version']
