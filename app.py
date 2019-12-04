@@ -170,14 +170,18 @@ def assign_page():
     return render_template("/assign_page.html")
 
 
-@app.route('/report_page')
-def report_page():
-    return render_template("/report_page.html")
+@app.route('/rate_paper')
+def rate_paper():
+    return render_template("/rate_paper.html")
+@app.route('/PCC_home')
+def PCC_home():
+    # retrive from DB
+    return render_template("/PCC_home.html")
 
-@app.route('/select_page')
-def select_page():
+@app.route('/volunteer')
+def volunteer():
     #retrive from DB
-    return render_template("/select_page.html")
+    return render_template("/volunteer.html")
 
 
 
