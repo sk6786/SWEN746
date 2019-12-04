@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar
-from pymongo.database import Collection
 import random
 
 
@@ -31,13 +30,13 @@ class List(ABC):
         if self._entries is None:
             self._collection = mongo
             self._entries = dict()
-            self.populate_list()
+            self._populate_list()
 
     # --------------------------
     # Methods for Concrete Class
     # --------------------------
     @abstractmethod
-    def mongo_save_entry(self, entry: E):
+    def _mongo_save_entry(self, entry: E):
         """
         Saves a new entry to the Mongo Database.
         :param entry: Instance of the object to add to the database.
@@ -46,7 +45,7 @@ class List(ABC):
         pass
 
     @abstractmethod
-    def mongo_delete_entry(self, entry: E):
+    def _mongo_delete_entry(self, entry: E):
         """
         Deletes an existing entry from the Mongo Database.
         :param entry: Instance of the object to remove from the database.
@@ -55,7 +54,7 @@ class List(ABC):
         pass
 
     @abstractmethod
-    def mongo_update_entry(self, old_entry: E, new_entry: E):
+    def _mongo_update_entry(self, old_entry: E, new_entry: E):
         """
         Updates an existing entry in the Mongo Database.
         :param old_entry: Instance of the entry to override in the database.
@@ -65,39 +64,11 @@ class List(ABC):
         pass
 
     @abstractmethod
-    def populate_list(self):
+    def _populate_list(self):
         """
         Pulls existing information from the Mongo Database and creates all of the instances that should exist for the
         List's corresponding object type. Should only be called by the constructor.
         :return: void.
-        """
-        pass
-
-    @abstractmethod
-    def get_list_json(self):
-        """
-        Creates and returns a JSON file representing the Dictionary for the List object. The first JSON object will be
-        the lowercase name of the type of entry being stored.
-        :return: JSON file representing the collection.
-        """
-        pass
-
-    @abstractmethod
-    def get_entry_json(self, entry_id: int):
-        """
-        Create and return a JSON representing the entry at the corresponding id location.
-        :param entry_id: int id of the entry.
-        :return: JSON format for the entry.
-        """
-        pass
-
-    @abstractmethod
-    def create_entry_object(self, entry):
-        """
-        Create and return an instance of an object. Parses the parameters to create an instance of the object. This does
-        not add the object to the collection if called directly.
-        :param entry: Hash of information to create the object.
-        :return: Instance of the appropriate object based on the type of List.
         """
         pass
 
@@ -116,7 +87,7 @@ class List(ABC):
             return False
         else:
             self._entries[entry_id] = entry
-            self.mongo_save_entry(entry)
+            self._mongo_save_entry(entry)
             return True
 
     def remove_entry(self, entry_id: int):
@@ -129,7 +100,7 @@ class List(ABC):
         if entry_id not in self._entries:
             return False
         else:
-            self.mongo_delete_entry(self._entries.pop(entry_id))
+            self._mongo_delete_entry(self._entries.pop(entry_id))
             return True
 
     def update_entry(self, entry_id: int, entry: E):
@@ -143,7 +114,7 @@ class List(ABC):
         if entry_id not in self._entries:
             return False
         else:
-            self.mongo_update_entry(self._entries[entry_id], entry)
+            self._mongo_update_entry(self._entries[entry_id], entry)
             self._entries[entry_id] = entry
 
     def get_list(self):
@@ -170,3 +141,24 @@ class List(ABC):
         while unique in self._entries:
             unique = random.randint
         return unique
+
+    def get_list_json(self):
+        """
+        Creates and returns a JSON file representing the Dictionary for the List object. The first JSON object will be
+        the lowercase name of the type of entry being stored.
+        :return: JSON file representing the collection.
+        """
+        all_entries = []
+
+        for entry_id in self._entries.keys():
+            all_entries.append(self._entries[entry_id].create_entry_dictionary)
+
+        return all_entries
+
+    def get_entry_json(self, entry_id: int):
+        """
+        Create and return a JSON representing the entry at the corresponding id location.
+        :param entry_id: int id of the entry.
+        :return: JSON format for the entry.
+        """
+        return self._entries[entry_id].create_entry_dictionary()

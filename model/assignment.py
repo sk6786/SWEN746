@@ -1,9 +1,12 @@
 import enum
+from model.list_pkg.entry import Entry
 from model.account_pkg.account import Account
-from model.artifact import Artifact
+from model.artifact_pkg.artifact import Artifact
+from model.list_pkg.account_list import AccountList
+from model.list_pkg.artifact_list import ArtifactList
 
 
-class Assignment:
+class Assignment(Entry):
     """
 
     """
@@ -39,7 +42,7 @@ class Assignment:
     # -------
     # Methods
     # -------
-    def create_assignment_hash(self):
+    def create_entry_dictionary(self):
         review_string = ""
 
         for pcm in self.reviews:
@@ -47,15 +50,47 @@ class Assignment:
 
         return {"assignmentID": self.assignment_id,
                 "status": self.status.value,
-                "paperID": self.paper.get_id(),
+                "paperID": self.paper.get_entry_id(),
                 "reviews": review_string,
-                "authorID": self.author.get_id(),
-                "pccID": self.pcc.get_id(),
-                "reportID": self.report.get_id()
+                "authorID": self.author.get_entry_id(),
+                "pccID": self.pcc.get_entry_id(),
+                "reportID": self.report.get_entry_id()
                 }
 
-    def get_id(self):
+    def get_entry_id(self):
         return self.assignment_id
+
+    def set_entry_attributes(self, attributes: {}):
+        account_list = AccountList()
+        artifact_list = ArtifactList()
+
+        self.assignment_id = attributes["assignmentID"]
+        paper_id = attributes["paperID"]
+        author_id = attributes["authorID"]
+        pcc_id = attributes["pccID"]
+        report_id = attributes["reportID"]
+        reviews = attributes["reviews"]
+        status_value = attributes["status"]
+
+        if status_value == Assignment.Status.WAITING_FOR_REVIEWS.value:
+            self.status = Assignment.Status.WAITING_FOR_REVIEWS
+        elif status_value == Assignment.Status.WAITING_FOR_REPORT.value:
+            self.status = Assignment.Status.WAITING_FOR_REPORT
+        elif status_value == Assignment.Status.COMPLETED.value:
+            self.status = Assignment.Status.COMPLETED
+
+        self.paper = artifact_list.get_entry(paper_id)
+        self.author = account_list.get_entry(author_id)
+
+        self.pcc = account_list.get_entry(pcc_id)
+        self.report = artifact_list.get_entry(report_id)
+
+        pcm_reviews = dict()
+        for pcm_id in reviews:
+            pcm = account_list.get_entry(pcm_id)
+            review = artifact_list.get_entry(reviews[pcm_id])
+            pcm_reviews[pcm] = review
+        self.reviews = pcm_reviews
 
     def pcm_volunteer(self, pcm: Account):
         if self.reviews[pcm] == Assignment.CurrentEnrollment.ASSIGNED:
