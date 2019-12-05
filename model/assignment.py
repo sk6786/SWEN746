@@ -35,9 +35,9 @@ class Assignment(Entry):
             self.reviews = dict()
         else:
             self.reviews = reviews
-        self.author = author
-        self.pcc = pcc
-        self.report = report
+            self.author = author
+            self.pcc = pcc
+            self.report = report
 
     # -------
     # Methods

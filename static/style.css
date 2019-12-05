@@ -76,3 +76,23 @@ color: white;
 .links a{
 margin-left: 4px;
 }
+
+.landing .welcome {
+    width: 69%;
+    display: inline-block;
+}
+.landing .card{
+    margin:auto;
+}
+.landing .notification {
+    width: 30%;
+    color:white;
+    display:inline-block;
+}
+
+.landDiv h1{
+    margin-bottom:1em;
+}
+.landDiv .btn {
+    margin-right: 1em;
+}

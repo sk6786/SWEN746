@@ -19,7 +19,12 @@
 
 </head>
 <script>
-
+$(document).ready(function () {
+    change_nav();
+    });
+    function change_nav(){
+    $('#manage_accounts a').html('Logout')
+    }
 </script>
 
 <body>
@@ -28,7 +33,7 @@
   {% include 'layout.html' %}
   <!-- Page Content -->
   <div class = "landing">
-  <div class="container">
+  <div class="container welcome">
     <div class="row h-100">
       <div class="col-lg-12 text-center landDiv">
         <h1 class="mt-5">Welcome to Sam 2020 Conference</h1>
@@ -43,6 +48,20 @@
       </div>
     </div>
   </div>
+      <div class="container notification">
+        <div class="card">
+          <div class="card-header">
+            Notifications
+          </div>
+          <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                {% for i in range(0,notifications|length) %}
+                  <p>{{ notifications[i] }}</p>
+                {% endfor %}
+
+
+            </blockquote>
+          </div>
   </div>
 
   <!-- Bootstrap core JavaScript -->

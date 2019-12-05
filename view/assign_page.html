@@ -14,6 +14,14 @@
 </head>
 <script>
 
+    $(function(){
+         var papers = '{{ paper_lst|tojson }}';
+         var papers = JSON.parse(papers);
+         for (var item of papers) {
+            $('#paper_lst').append('<tr><td class="accountId">'+ item['accountID'] + '</td><td>' + item['username']+ '</td><td>' + item['role']+ '</td><td><button class="btn btn-primary editAccount">Edit</button></td><td><button class="btn btn-danger deleteAccount">Delete</button></td></tr>');
+
+        }
+    });
 
 </script>
 <body>
@@ -30,37 +38,13 @@
       <th scope="col">PCM</th>
         <th scope="col">Action</th>
     </tr>
-  <tr>
-    <td>MDE.pdf</td>
-     <td> <form  action="/action_page.php" >
-
-    <select name="PCM" multiple style="width: 150px; height: 150px;" >
-  <option value="name">SAAD</option>
-  <option value="name">SULTAN</option>
-  <option value="name">WANG</option>
-  <option value="name">ELIJAH</option>
-   <option value="name">Vibhavi</option>
-</select>
-</form></td>
-     <td> <button type="button" class="btn btn-success">Assign</button></td>
-
-  </tr>
-  <tr>
-    <td>Accounting.pdf</td>
-
-
-  </tr>
-  <tr>
-    <td>Quality Assurance.pdf</td>
-
-
-  </tr>
-  <tr>
-    <td>Testing.pdf</td>
-
-
-  </tr>
+    <tr>
+        <td> </td>
+        <td> </td>
+        <td> <button type="button" class="btn btn-success">Assign</button></td>
+    </tr>
   </thead>
+
   <tbody id="files">
 
   </tbody>
