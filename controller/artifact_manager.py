@@ -1,4 +1,5 @@
 from model.artifact_pkg.artifact import Artifact
+from model.artifact_pkg.paper import Paper
 from model.list_pkg.artifact_list import ArtifactList
 
 
@@ -10,12 +11,12 @@ class ArtifactManager:
     def create_artifact(self, artifact_type: Artifact.ArtifactType,
                         author_id: int,
                         artifact_name: str):
-        entry = self.atf_list.create_entry_object({'type': artifact_type, 'authorID': author_id,
-                                                   'artifactName': artifact_name})
-        self.atf_list.add_entry(entry.artifact_id, entry)
+        atf_id = self.atf_list.create_unique_id()
+        atf = Artifact(atf_id, atf_id, artifact_type, author_id, artifact_name)
+        entry = self.atf_list.add_entry(atf_id, atf)
 
     def create_paper(self, author_id: int, artifact_name: str,
                      title: str, authors: str, version: int, topic: str):
-        entry = self.atf_list.create_entry_object({'type': 'Paper', 'authorID': author_id, 'artifactName': artifact_name,
-                                           'title': title, 'authors': authors, 'version': version, 'topic': topic})
-        self.atf_list.add_entry(entry.artifact_id, entry)
+        paper_id = self.atf_list.create_unique_id()
+        paper = Paper(paper_id, paper_id, Artifact.ArtifactType.PAPER, author_id, artifact_name, title, authors, version, topic)
+        entry = self.atf_list.add_entry(paper_id, paper)
