@@ -10,6 +10,7 @@ from model.account_pkg.pcc_account import PCCAccount
 from model.account_pkg.pcm_account import PCMAccount
 from model.account_pkg.administrator_account import AdministratorAccount
 from controller.artifact_manager import ArtifactManager
+from controller.assignment_manager import AssignmentManager
 import urllib.parse
 from flask_pymongo import PyMongo
 app = Flask(__name__, template_folder="view")
@@ -23,18 +24,8 @@ ARTIFACTS = ArtifactList()
 ACCOUNTS = AccountList()
 ASSIGNMENTS = AssignmentList()
 TEMPLATES = TemplateList()
-
-
-def create_account(account_id: int, username: str, password: str, role: str):
-    if role == Account.Role.AUTHOR.value:
-        return AuthorAccount(account_id, username, password)
-    elif role == Account.Role.PCM.value:
-        return PCMAccount(account_id, username, password)
-    elif role == Account.Role.PCC.value:
-        return PCCAccount(account_id, username, password)
-    elif role == Account.Role.ADMIN.value:
-        return AdministratorAccount(account_id, username, password)
-
+atf_manager = ArtifactManager()
+assignment_manager = AssignmentManager()
 
 @app.route('/')
 def main():
@@ -44,6 +35,10 @@ def main():
         if user:
             if user['role'] == "Admin":
                 return redirect(url_for("admin_home"))
+            if user['role'] == "PCC":
+                return redirect(url_for("PCC_home"))
+            if user['role'] == "PCM":
+                return redirect(url_for("PCM_home"))
             return render_template('home.html', user=user)
         else:
             return redirect(url_for('login'))
@@ -54,6 +49,11 @@ def main():
 @app.route('/adminHome', methods=['GET', 'POST'])
 def admin_home():
     return render_template('admin_home.html')
+
+
+@app.route('/PCM_home')
+def PCM_home():
+    return render_template('PCM_home.html')
 
 
 @app.route('/notification', methods=['GET', 'POST'])
@@ -159,17 +159,19 @@ def upload_file():
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
     if request.method == 'POST':
         # TODO: get the real author id
-        author_id = request.cookies.get('userID')
+        author_id = int(request.cookies.get('userID'))
         title = request.form['title']
         topic = request.form['topic']
-        version = request.form['version']
         fl = request.files['fileUpload']
         authors = request.form['authors']
+        version = '0'
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
         if ext in allowed_extensions:
-            atf_manager = ArtifactManager()
             atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
+            mongo.save_file(title+version, fl, content_type=ext_mime_type[ext])
+            paper_id = atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
+            assignment_manager.create_assignment(paper_id, author_id)
             mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
@@ -200,44 +202,48 @@ def assign_page():
 @app.route('/rate_paper')
 def rate_paper():
     return render_template("/rate_paper.html")
-
-
 @app.route('/PCC_home')
 def PCC_home():
     # retrive from DB
     return render_template("/PCC_home.html")
 
-
 @app.route('/volunteer')
 def volunteer():
     #retrive from DB
-    return render_template("/volunteer.html")
+    papers = assignment_manager.get_volunteerable_papers()
+    return render_template("/volunteer.html", data=papers)
 
 
-@app.route('/resubmit')
+@app.route('/volunteerPaper')
+def volunteer_paper():
+    paper_id = int(request.args.get("paperID"))
+    user_id = int(request.cookies.get('userID'))
+    author_id = int(request.args.get("authorID"))
+    assignment_manager.volunteer_paper(user_id, paper_id)
+    return jsonify({'code':"success"})
+
+@app.route('/resubmit', methods=['GET', 'POST'])
 def resubmit():
     allowed_extensions = {'pdf', 'doc', 'docx'}
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
+    author_id = int(request.cookies.get('userID'))
     if request.method == 'POST':
-        author_id = request.cookies.get('userID')
+        paper_id = request.form['paperID']
         title = request.form['title']
-        topic = request.form['topic']
-        version = request.form['version']
         fl = request.files['fileUpload']
-        authors = request.form['authors']
+        version = request.form['version']
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
+
         if ext in allowed_extensions:
-            atf_manager = ArtifactManager()
-            atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
-            mongo.save_file(title, fl, content_type=ext_mime_type[ext])
+            atf_manager.resubmit_paper(int(paper_id))
+            version = str(int(version) + 1)
+            mongo.save_file(title+version, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
             return render_template("/resubmit.html", error=error)
-        # add code to add file to the db
-        return render_template("/resubmit.html", error=200)
-    return render_template("/resubmit.html", files = [{'id':'1223','title':'saad', 'version': '234', 'paperId':'123'},{'id':'1223','title':'saad', 'version': '234', 'paperid': '3122'}])
+    return render_template("/resubmit.html", files=atf_manager.get_author_paper(author_id))
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ from model.account_pkg.account import Account
 from model.artifact_pkg.artifact import Artifact
 from model.list_pkg.account_list import AccountList
 from model.list_pkg.artifact_list import ArtifactList
-
+from model.artifact_pkg.paper import Paper
 
 class Assignment(Entry):
     """
@@ -26,7 +26,7 @@ class Assignment(Entry):
     # ------------
     # Constructors
     # ------------
-    def __init__(self, assignment_id: int, status: Status, paper: Artifact, author: Account, reviews: dict = None,
+    def __init__(self, assignment_id: int, status: Status, paper: Paper, author: Account, reviews: dict = None,
                  report: Artifact = None, pcc: Account = None):
         self.assignment_id = assignment_id
         self.status = status
@@ -43,18 +43,33 @@ class Assignment(Entry):
     # Methods
     # -------
     def create_entry_dictionary(self):
-        review_string = ""
+
+        rev = {}
 
         for pcm in self.reviews:
-            review_string += str(pcm.get_id()) + "-" + str(self.reviews[pcm])
+            possible_review = self.reviews[pcm]
+            if isinstance(possible_review, Artifact):
+                rev[str(pcm.get_entry_id())] = self.reviews[pcm].get_entry_id()
+            else:
+                rev[str(pcm.get_entry_id())] = self.reviews[pcm].value
+
+        if self.pcc is None:
+            pcc = None
+        else:
+            pcc = self.pcc.get_entry_id()
+
+        if self.report is None:
+            report = None
+        else:
+            report = self.report.get_entry_id()
 
         return {"assignmentID": self.assignment_id,
                 "status": self.status.value,
                 "paperID": self.paper.get_entry_id(),
-                "reviews": review_string,
+                "reviews": rev,
                 "authorID": self.author.get_entry_id(),
-                "pccID": self.pcc.get_entry_id(),
-                "reportID": self.report.get_entry_id()
+                "pccID": pcc,
+                "reportID": report
                 }
 
     def get_entry_id(self):
@@ -87,15 +102,13 @@ class Assignment(Entry):
 
         pcm_reviews = dict()
         for pcm_id in reviews:
-            pcm = account_list.get_entry(pcm_id)
-            review = artifact_list.get_entry(reviews[pcm_id])
+            pcm = account_list.get_entry(int(pcm_id))
+            review = artifact_list.get_entry(reviews[int(pcm_id)])
             pcm_reviews[pcm] = review
         self.reviews = pcm_reviews
 
     def pcm_volunteer(self, pcm: Account):
-        if self.reviews[pcm] == Assignment.CurrentEnrollment.ASSIGNED:
-            return
-        elif self.reviews[pcm] > 0:
+        if pcm in self.reviews:
             return
         else:
             self.reviews[pcm] = Assignment.CurrentEnrollment.VOLUNTEERED
