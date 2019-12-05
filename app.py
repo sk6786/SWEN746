@@ -158,7 +158,6 @@ def upload_file():
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
     if request.method == 'POST':
-        # TODO: get the real author id
         author_id = int(request.cookies.get('userID'))
         title = request.form['title']
         topic = request.form['topic']
@@ -168,11 +167,9 @@ def upload_file():
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
         if ext in allowed_extensions:
-            atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
             mongo.save_file(title+version, fl, content_type=ext_mime_type[ext])
             paper_id = atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
             assignment_manager.create_assignment(paper_id, author_id)
-            mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
             return render_template("/upload_file.html", error=error)

@@ -68,7 +68,7 @@ class AssignmentList(List, Singleton):
         """
         for entry in self._collection.find():
             artifact = Artifact(0, 0, None, 0, "")
-            account = AuthorAccount(0, "", "")
+            account = AuthorAccount(0, "", "", [])
             assignment = Assignment(0, None, artifact, account)
             assignment.set_entry_attributes(entry)
             self._entries[entry["assignmentID"]] = assignment

@@ -3,8 +3,8 @@ from model.account_pkg.account import Account
 
 class AdministratorAccount(Account):
 
-    def __init__(self, account_id: int, username: str, password: str):
-        super(AdministratorAccount, self).__init__(account_id, username, password, Account.Role.ADMIN)
+    def __init__(self, account_id: int, username: str, password: str, notification: []):
+        super(AdministratorAccount, self).__init__(account_id, username, password, Account.Role.ADMIN, notification)
 
     # @property
     # def _account_id(self):
