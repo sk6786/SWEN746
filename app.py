@@ -162,14 +162,14 @@ def upload_file():
         author_id = request.cookies.get('userID')
         title = request.form['title']
         topic = request.form['topic']
-        version = request.form['version']
         fl = request.files['fileUpload']
         authors = request.form['authors']
+        version = '0'
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
         if ext in allowed_extensions:
             atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
-            mongo.save_file(title, fl, content_type=ext_mime_type[ext])
+            mongo.save_file(title+version, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
             return render_template("/upload_file.html", error=error)
@@ -213,27 +213,27 @@ def volunteer():
     return render_template("/volunteer.html")
 
 
-@app.route('/resubmit')
+@app.route('/resubmit', methods=['GET', "POST"])
 def resubmit():
     allowed_extensions = {'pdf', 'doc', 'docx'}
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
                      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
     author_id = request.cookies.get('userID')
     if request.method == 'POST':
+        paper_id = request.form['paperID']
         title = request.form['title']
-        version = request.form['version']
         fl = request.files['fileUpload']
+        version = request.form['version']
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
 
         if ext in allowed_extensions:
-            atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
-            mongo.save_file(title, fl, content_type=ext_mime_type[ext])
+            atf_manager.resubmit_paper(int(paper_id))
+            version = str(int(version) + 1)
+            mongo.save_file(title+version, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
             return render_template("/resubmit.html", error=error)
-        # add code to add file to the db
-        return render_template("/resubmit.html", error=200)
     return render_template("/resubmit.html", files=atf_manager.get_author_paper(author_id))
 
 

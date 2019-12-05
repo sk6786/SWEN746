@@ -17,7 +17,7 @@
          var files = '{{ files|tojson }}';
          var files = JSON.parse(files);
          for (var item of files) {
-            $('#files').append('<tr><td class="paperId" style="display:none">'+ item['id'] + '</td><td class="title">'+ item['title'] + '</td><td class="version">' + item['version']+ '</td><td >' + '<button class="btn btn-primary resubmit" data-target="#myModal">Re-upload File</button></button></td></tr>');
+            $('#files').append('<tr><td class="paperId" style="display:none">'+ item['paperId'] + '</td><td class="title">'+ item['title'] + '</td><td class="version">' + item['version']+ '</td><td >' + '<button class="btn btn-primary resubmit" data-target="#myModal">Re-upload File</button></button></td></tr>');
 
         }
     });
@@ -25,7 +25,6 @@
         $('.resubmit').click(function () {
             var $row = $(this).closest("tr"),       // Finds the closest row <tr>
                 $tds = $row.find(".paperId").text();          // Finds all children <td> elements
-            var $paper = $row.find(".file").val();
                 $("#paperID").val($tds);
                 $("#version").val($row.find(".version").text());
                 $("#title").val($row.find(".title").text());
@@ -33,7 +32,9 @@
                 $('#myModal').modal('show');
         });
     });
-
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
 </script>
 <body>
 
@@ -70,6 +71,7 @@
       <div class="modal-body">
 
         <form action="" method="post" name="submit_paper" enctype="multipart/form-data">
+            <div style="visibility:hidden" >
             <div class="form-group">
                     <label for="paperID">Paper ID</label>
                     <input type="text" class="form-control" name="paperID" id="paperID" placeholder="paperID" value="" required >
@@ -81,6 +83,7 @@
                 <div class="form-group">
                     <label for="version">Version</label>
                     <input type="text" class="form-control" name="version" id="version" placeholder="1.0" required >
+                </div>
                 </div>
                  <div class="form-group">
                     <label for="fileUpload">File Upload</label>
