@@ -27,6 +27,16 @@ TEMPLATES = TemplateList()
 atf_manager = ArtifactManager()
 assignment_manager = AssignmentManager()
 
+def create_account(account_id: int, username: str, password: str, role: str):
+    if role == Account.Role.AUTHOR.value:
+        return AuthorAccount(account_id, username, password, [])
+    elif role == Account.Role.PCM.value:
+        return PCMAccount(account_id, username, password, [])
+    elif role == Account.Role.PCC.value:
+        return PCCAccount(account_id, username, password, [])
+    elif role == Account.Role.ADMIN.value:
+        return AdministratorAccount(account_id, username, password, [])
+
 @app.route('/')
 def main():
     user_id = request.cookies.get('userID')
