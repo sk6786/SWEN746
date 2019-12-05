@@ -5,6 +5,7 @@ from model.list_pkg.artifact_list import ArtifactList
 from model.list_pkg.assignment_list import AssignmentList
 from model.list_pkg.template_list import TemplateList
 from controller.artifact_manager import ArtifactManager
+from controller.assignment_manager import AssignmentManager
 import urllib.parse
 from flask_pymongo import PyMongo
 app = Flask(__name__, template_folder="view")
@@ -18,6 +19,8 @@ ARTIFACTS = ArtifactList()
 ACCOUNTS = AccountList()
 ASSIGNMENTS = AssignmentList()
 TEMPLATES = TemplateList()
+assignment_manager = AssignmentManager()
+
 
 @app.route('/')
 def main():
@@ -27,6 +30,10 @@ def main():
         if user:
             if user['role'] == "Admin":
                 return redirect(url_for("admin_home"))
+            if user['role'] == "PCC":
+                return redirect(url_for("PCC_home"))
+            if user['role'] == "PCM":
+                return redirect(url_for("PCM_home"))
             return render_template('home.html', user=user)
         else:
             return redirect(url_for('login'))
@@ -149,7 +156,8 @@ def upload_file():
         ext = artifact_name.rsplit('.', 1)[1].lower()
         if ext in allowed_extensions:
             atf_manager = ArtifactManager()
-            atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
+            paper_id = atf_manager.create_paper(author_id, artifact_name, title, authors, version, topic)
+            assignment_manager.create_assignment(author_id, paper_id)
             mongo.save_file(title, fl, content_type=ext_mime_type[ext])
         else:
             error = 'Invalid File Type'
@@ -179,6 +187,11 @@ def assign_page():
 @app.route('/rate_paper')
 def rate_paper():
     return render_template("/rate_paper.html")
+
+@app.route('/PCM_home')
+def PCM_home():
+    # retrieve from DB
+    return render_template("/PCM_home.html")
 @app.route('/PCC_home')
 def PCC_home():
     # retrive from DB
@@ -187,7 +200,16 @@ def PCC_home():
 @app.route('/volunteer')
 def volunteer():
     #retrive from DB
-    return render_template("/volunteer.html")
+    papers = assignment_manager.get_volunteerable_papers()
+    return render_template("/volunteer.html", data=papers)
+
+@app.route('/volunteerPaper')
+def volunteer_paper():
+    paper_id = int(request.args.get("paperID"))
+    user_id = int(request.cookies.get('userID'))
+    author_id = int(request.args.get("authorID"))
+    assignment_manager.volunteer_paper(user_id, paper_id)
+    return jsonify({'code':"success"})
 
 @app.route('/resubmit', methods=['GET', 'POST'])
 def resubmit():

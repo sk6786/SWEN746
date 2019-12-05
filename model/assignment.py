@@ -4,7 +4,7 @@ from model.account_pkg.account import Account
 from model.artifact_pkg.artifact import Artifact
 from model.list_pkg.account_list import AccountList
 from model.list_pkg.artifact_list import ArtifactList
-
+from model.artifact_pkg.paper import Paper
 
 class Assignment(Entry):
     """
@@ -26,7 +26,7 @@ class Assignment(Entry):
     # ------------
     # Constructors
     # ------------
-    def __init__(self, assignment_id: int, status: Status, paper: Artifact, author: Account, reviews: dict = None,
+    def __init__(self, assignment_id: int, status: Status, paper: Paper, author: Account, reviews: dict = None,
                  report: Artifact = None, pcc: Account = None):
         self.assignment_id = assignment_id
         self.status = status
@@ -93,9 +93,7 @@ class Assignment(Entry):
         self.reviews = pcm_reviews
 
     def pcm_volunteer(self, pcm: Account):
-        if self.reviews[pcm] == Assignment.CurrentEnrollment.ASSIGNED:
-            return
-        elif self.reviews[pcm] > 0:
+        if pcm in self.reviews:
             return
         else:
             self.reviews[pcm] = Assignment.CurrentEnrollment.VOLUNTEERED
