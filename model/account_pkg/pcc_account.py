@@ -3,8 +3,8 @@ from model.account_pkg.account import Account
 
 class PCCAccount(Account):
 
-    def __init__(self, account_id: int, username: str, password: str):
-        super(PCCAccount, self).__init__(account_id, username, password, Account.Role.PCC)
+    def __init__(self, account_id: int, username: str, password: str, notification: []):
+        super(PCCAccount, self).__init__(account_id, username, password, Account.Role.PCC, notification)
 
 
     def login(self, username: str, password: str):

@@ -15,12 +15,13 @@ class Account(Entry, ABC):
         PCC = "PCC"
         ADMIN = "Admin"
 
-    def __init__(self, account_id: int, username: str, password: str, role: Role):
+    def __init__(self, account_id: int, username: str, password: str, role: Role, notifications: [], deadline: str = None):
         self.account_id = account_id
         self.username = username
         self.password = password
         self.role = role
-        self.__client = pymongo.MongoClient("mongodb+srv://"+urllib.parse.quote_plus("USER2")+":"+urllib.parse.quote_plus("1q2w3e4r")+"@cluster0-tk7v1.mongodb.net/test?retryWrites=true&w=majority")
+        self.notifications = notifications
+        self.deadline = deadline
 
     def get_entry_id(self):
         return self.account_id
@@ -30,13 +31,18 @@ class Account(Entry, ABC):
             "accountID": self.account_id,
             "username": self.username,
             "password": self.password,
-            "role": self.role.value
+            "role": self.role.value,
+            "notifications": self.notifications,
+            "deadline": self.deadline
         }
 
     def set_entry_attributes(self, attributes: {}):
         self.account_id = attributes["accountID"]
         self.username = attributes["username"]
         self.password = attributes["password"]
+        self.notifications = attributes["notifications"]
+        self.deadline = attributes["deadline"]
+
         role = attributes["role"]
         if role == Account.Role.AUTHOR.value:
             self.role = Account.Role.AUTHOR
@@ -46,6 +52,21 @@ class Account(Entry, ABC):
             self.role = Account.Role.PCC
         elif role == Account.Role.ADMIN.value:
             self.role = Account.Role.ADMIN
+
+    def set_deadline(self, deadline: str):
+        self.deadline = deadline
+
+    def get_deadline(self):
+        return self.deadline
+
+    def get_notifications(self):
+        return self.notifications
+
+    def add_notification(self, notification: str):
+        self.notifications.append(notification)
+
+    def remove_notification(self, notification: str):
+        self.notifications.remove(notification)
 
     @abstractmethod
     def change_password(self, oldpass: str, newpass: str):

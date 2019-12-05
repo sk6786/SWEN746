@@ -72,13 +72,13 @@ class AccountList(List, Singleton):
             account = None
 
             if account_type == Account.Role.AUTHOR.value:
-                account = AuthorAccount(0, "", "")
+                account = AuthorAccount(0, "", "", [])
             elif account_type == Account.Role.PCM.value:
-                account = PCMAccount(0, "", "")
+                account = PCMAccount(0, "", "", [])
             elif account_type == Account.Role.PCC.value:
-                account = PCCAccount(0, "", "")
+                account = PCCAccount(0, "", "", [])
             elif account_type == Account.Role.ADMIN.value:
-                account = AdministratorAccount(0, "", "")
+                account = AdministratorAccount(0, "", "", [])
 
             account.set_entry_attributes(entry)
             self._entries[entry["accountID"]] = account
