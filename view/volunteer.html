@@ -13,12 +13,28 @@
 </head>
 <script>
     $(function(){
-         var files = '{{ files|tojson }}';
+         var files = '{{ data|tojson }}';
          var files = JSON.parse(files);
          for (var item of files) {
-            $('#files').html('<tr><td class="paperId" style="display:none">'+ item['id'] + '</td><td>'+ item['title'] + '</td><td>' + item['version']+ '</td><td>' + '<button type="button" class="btn btn-success">Success</button></td></tr>');
+            $('#files').html('<tr><td class="paperId" style="display:none">'+ item['artifactID'] + '</td><td class="authorId" style="display:none">'+ item['authorID'] + '</td><td>'+ item['title'] + '</td><td class="authors">' + item['authors']+ '</td><td>' + '<button type="button" class="btn btn-success volunteer">Volunteer</button></td></tr>');
 
         }
+    });
+    $(function() {
+        $('.volunteer').click(function () {
+            var $row = $(this).closest("tr"),       // Finds the closest row <tr>
+                $tds = $row.find(".paperId").text();
+            var author_id = $row.find(".authorId").text();
+            // Finds all children <td> elements
+            $.getJSON('/volunteerPaper', {
+                paperID: $tds,
+                authorID: author_id
+
+            }, function (data) {
+                alert(data['code']);
+                location.reload();
+            });
+        });
     });
 
 
@@ -34,7 +50,7 @@
   <thead>
     <tr>
       <th scope="col">Paper Title</th>
-      <th scope="col">Version</th>
+      <th scope="col">Authors</th>
       <th scope="col">Action</th>
 
     </tr>

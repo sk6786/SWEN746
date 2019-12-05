@@ -151,7 +151,7 @@ class List(ABC):
         all_entries = []
 
         for entry_id in self._entries.keys():
-            all_entries.append(self._entries[entry_id].create_entry_dictionary)
+            all_entries.append(self._entries[entry_id].create_entry_dictionary())
 
         return all_entries
 
