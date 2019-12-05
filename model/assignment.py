@@ -103,8 +103,15 @@ class Assignment(Entry):
         pcm_reviews = dict()
         for pcm_id in reviews:
             pcm = account_list.get_entry(int(pcm_id))
-            review = artifact_list.get_entry(reviews[int(pcm_id)])
-            pcm_reviews[pcm] = review
+            pcm_dict_num = reviews[pcm_id]
+
+            if pcm_dict_num < 0:
+                if pcm_dict_num == Assignment.CurrentEnrollment.VOLUNTEERED:
+                    pcm_reviews[pcm] = Assignment.CurrentEnrollment.VOLUNTEERED
+                elif pcm_dict_num == Assignment.CurrentEnrollment.ASSIGNED:
+                    pcm_reviews[pcm] = Assignment.CurrentEnrollment.ASSIGNED
+            else:
+                pcm_reviews[pcm] = artifact_list.get_entry(reviews[pcm_dict_num])
         self.reviews = pcm_reviews
 
     def pcm_volunteer(self, pcm: Account):
