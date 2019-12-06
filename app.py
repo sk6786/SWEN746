@@ -262,7 +262,8 @@ def forgot_password():
 @PCM_login_required
 def review_page():
     #retrive from DB
-    return render_template("/review_page.html")
+    papers = assignment_manager.get_assigned_papers()
+    return render_template("/review_page.html", papers = papers)
 
 
 @app.route('/assign_page', methods=["GET", "POST"])
@@ -272,7 +273,8 @@ def assign_page():
     if request.method == "POST":
         paper_id = request.form['paperID']
         pcms = request.form.getlist('assignable')
-    obj = [{"Paper": ARTIFACTS.get_entry(47).create_entry_dictionary(), 'PCM':"Jeff, Jose", "List_PCM": {"**Jeff": 12, "**Jefe":13, "Mario": 14, "Jasmine":11, "Martine": 23, "Wang":32}}]
+        assignment_manager.assign_list_pcm(int(paper_id), pcms)
+    obj = assignment_manager.get_assignable_papers()
     return render_template("/assign_page.html", data = obj)
 
 

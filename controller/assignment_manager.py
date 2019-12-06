@@ -72,7 +72,7 @@ class AssignmentManager:
             if role == 'PCM':
                 username = entry_dict['username']
                 acc_id = entry_dict['accountID']
-                if '*'+username not in pcm_dic:
+                if '*'+username not in pcm_dic and acc_id >= 0:
                     pcm_dic[username] = acc_id
         return pcm_dic
 
