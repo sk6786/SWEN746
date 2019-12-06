@@ -265,11 +265,15 @@ def review_page():
     return render_template("/review_page.html")
 
 
-@app.route('/assign_page')
+@app.route('/assign_page', methods=["GET", "POST"])
 @PCC_login_required
 def assign_page():
     #retrive from DB
-    return render_template("/assign_page.html")
+    if request.method == "POST":
+        paper_id = request.form['paperID']
+        pcms = request.form.getlist('assignable')
+    obj = [{"Paper": ARTIFACTS.get_entry(47).create_entry_dictionary(), 'PCM':"Jeff, Jose", "List_PCM": {"**Jeff": 12, "**Jefe":13, "Mario": 14, "Jasmine":11, "Martine": 23, "Wang":32}}]
+    return render_template("/assign_page.html", data = obj)
 
 
 @app.route('/rate_paper')
@@ -315,7 +319,6 @@ def resubmit():
         version = request.form['version']
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
-
         if ext in allowed_extensions:
             atf_manager.resubmit_paper(int(paper_id))
             version = str(int(version) + 1)

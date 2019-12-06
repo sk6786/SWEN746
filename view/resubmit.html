@@ -15,7 +15,7 @@
 <script>
     $(function(){
          var files = '{{ files|tojson }}';
-         var files = JSON.parse(files);
+         files = JSON.parse(files);
          for (var item of files) {
             $('#files').append('<tr><td class="paperId" style="display:none">'+ item['paperId'] + '</td><td class="title">'+ item['title'] + '</td><td class="version">' + item['version']+ '</td><td >' + '<button class="btn btn-primary resubmit" data-target="#myModal">Re-upload File</button></button></td></tr>');
 
