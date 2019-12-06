@@ -151,11 +151,6 @@ def logout():
     return resp
 
 
-@app.route('/file/<filename>')
-def file(filename):
-    return mongo.send_file(filename)
-
-
 @app.route('/home')
 def home():
     return redirect(url_for("main"))
@@ -258,11 +253,14 @@ def forgot_password():
     return render_template("/auth/forgot_password.html")
 
 
-@app.route('/review_page')
+@app.route('/review_page', methods=['POST', "GET"])
 @PCM_login_required
 def review_page():
     #retrive from DB
-    papers = assignment_manager.get_assigned_papers()
+    papers = [{"paperID": "915" , "fileName": "test0", "title": "Hello"}]
+    if request.method =="POST":
+        #something
+        return render_template("/review_page.html", papers = papers)
     return render_template("/review_page.html", papers = papers)
 
 

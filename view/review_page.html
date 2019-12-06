@@ -4,16 +4,41 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="../static/style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
     <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-
 </head>
 <script>
+    $(function(){
+         var files = '{{ papers|tojson }}';
+         files = JSON.parse(files);
+         for (var item of files) {
+            $('#files').append('<tr><td class="paperId" style="display:none">'+ item['paperId'] + '</td><td class="fileName" style="display:none">' + item["fileName"] + '</td><td class="title">'+ item['title'] + '</td><td><button class="btn download" style="color:white"><i class="fa fa-download"></i> Download</button></td><td >' + '<button class="btn btn-primary review" data-target="#myModal">Create Review</button></button></td></tr>');
+        }
+    });
+    $(function() {
+        $('.review').click(function () {
+            var $row = $(this).closest("tr"),       // Finds the closest row <tr>
+                $tds = $row.find(".paperId").text();          // Finds all children <td> elements
+                $("#paperID").val($tds);
+                $("#title").val($row.find(".title").text());
+                jQuery.noConflict();
+                $('#myModal').modal('show');
+        });
+    });
+     $(function() {
+        $('.download').click(function () {
+            var $row = $(this).closest("tr"),       // Finds the closest row <tr>
+                $tds = $row.find(".fileName").text();
+            window.open("/file/"+$tds, "_blank")
+        });
+    });
 
-
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
 </script>
 <body>
 
@@ -26,7 +51,7 @@
   <thead>
     <tr>
       <th scope="col">Paper Title</th>
-      <th scope="col">Version</th>
+      <th scope="col">Download</th>
       <th scope="col">Action</th>
 
     </tr>
@@ -35,9 +60,43 @@
 
   </tbody>
 </table>
+</div>
 
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
 
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Resubmit Paper</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h5 id="title">
+
+        </h5>
+        <form action="" method="post" name="submit_paper" enctype="multipart/form-data">
+            <div style="visibility:hidden" >
+            <div class="form-group">
+                    <input type="hidden" class="form-control" name="paperID" id="paperID" placeholder="paperID" value="" required >
+                </div>
+                </div>
+                 <div class="form-group">
+                    <label for="fileUpload">Upload Review</label>
+                    <input type="file" class="form-control-file" name="fileUpload" accept=".doc,.pdf, .docx" required>
+                  </div>
+                      <input type="submit" value="Submit" class="btn btn-primary float-left">
+
+        </form>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
     </div>
+
+  </div>
+</div>
 
 </body>
 </html>
