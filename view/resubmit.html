@@ -15,7 +15,7 @@
 <script>
     $(function(){
          var files = '{{ files|tojson }}';
-         var files = JSON.parse(files);
+         files = JSON.parse(files);
          for (var item of files) {
             $('#files').append('<tr><td class="paperId" style="display:none">'+ item['paperId'] + '</td><td class="title">'+ item['title'] + '</td><td class="version">' + item['version']+ '</td><td >' + '<button class="btn btn-primary resubmit" data-target="#myModal">Re-upload File</button></button></td></tr>');
 
@@ -73,16 +73,13 @@
         <form action="" method="post" name="submit_paper" enctype="multipart/form-data">
             <div style="visibility:hidden" >
             <div class="form-group">
-                    <label for="paperID">Paper ID</label>
-                    <input type="text" class="form-control" name="paperID" id="paperID" placeholder="paperID" value="" required >
+                    <input type="hidden" class="form-control" name="paperID" id="paperID" placeholder="paperID" value="" required >
                 </div>
             <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" class="form-control" name="title" id="title" placeholder="1.0" value="" required >
+                    <input type="hidden" class="form-control" name="title" id="title" placeholder="1.0" value="" required >
                 </div>
                 <div class="form-group">
-                    <label for="version">Version</label>
-                    <input type="text" class="form-control" name="version" id="version" placeholder="1.0" required >
+                    <input type="hidden" class="form-control" name="version" id="version" placeholder="1.0" required >
                 </div>
                 </div>
                  <div class="form-group">

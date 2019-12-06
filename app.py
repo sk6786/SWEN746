@@ -11,6 +11,8 @@ from model.account_pkg.pcm_account import PCMAccount
 from model.account_pkg.administrator_account import AdministratorAccount
 from controller.artifact_manager import ArtifactManager
 from controller.assignment_manager import AssignmentManager
+from controller.notification_manager import NotificationManager
+from functools import wraps
 import urllib.parse
 from flask_pymongo import PyMongo
 app = Flask(__name__, template_folder="view")
@@ -26,6 +28,52 @@ ASSIGNMENTS = AssignmentList()
 TEMPLATES = TemplateList()
 atf_manager = ArtifactManager()
 assignment_manager = AssignmentManager()
+notification_manager = NotificationManager()
+
+def admin_login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        user_id = int(request.cookies.get('userID'))
+        if ACCOUNTS.get_entry(user_id).role == Account.Role.ADMIN:
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first")
+            return redirect(url_for('login'))
+    return wrap
+
+
+def PCM_login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        user_id = int(request.cookies.get('userID'))
+        if ACCOUNTS.get_entry(user_id).role == Account.Role.PCM:
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first")
+            return redirect(url_for('login'))
+    return wrap
+
+def Author_login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        user_id = int(request.cookies.get('userID'))
+        if ACCOUNTS.get_entry(user_id).role == Account.Role.AUTHOR:
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first")
+            return redirect(url_for('login'))
+    return wrap
+
+def PCC_login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        user_id = int(request.cookies.get('userID'))
+        if ACCOUNTS.get_entry(user_id).role == Account.Role.PCC:
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first")
+            return redirect(url_for('login'))
+    return wrap
 
 def create_account(account_id: int, username: str, password: str, role: str):
     if role == Account.Role.AUTHOR.value:
@@ -49,7 +97,7 @@ def main():
                 return redirect(url_for("PCC_home"))
             if user['role'] == "PCM":
                 return redirect(url_for("PCM_home"))
-            return render_template('home.html', user=user)
+            return render_template('home.html', user=user, notifications = notification_manager.get_all_notifications(int(request.cookies.get('userID'))))
         else:
             return redirect(url_for('login'))
     else:
@@ -57,18 +105,28 @@ def main():
 
 
 @app.route('/adminHome', methods=['GET', 'POST'])
+@admin_login_required
 def admin_home():
-    return render_template('admin_home.html')
+    return render_template('admin_home.html',notifications = notification_manager.get_all_notifications(int(request.cookies.get('userID'))))
 
 
 @app.route('/PCM_home')
+@PCM_login_required
 def PCM_home():
-    return render_template('PCM_home.html')
+    return render_template('PCM_home.html', notifications=notification_manager.get_all_notifications(int(request.cookies.get('userID'))))
 
 
 @app.route('/notification', methods=['GET', 'POST'])
+@admin_login_required
 def notification():
-    return render_template('notification.html')
+    if request.method == "POST":
+        author = request.form['Author']
+        PCC = request.form['PCC']
+        PCM = request.form['PCM']
+        notification_manager.update_all_deadlines({"Author": author, "PCM": PCM, "PCC": PCC})
+        return redirect(url_for('admin_home'))
+    notifications = notification_manager.get_all_deadlines()
+    return render_template('notification.html', notifications = notifications)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -104,6 +162,7 @@ def home():
 
 
 @app.route('/addAccount',methods=['GET', 'POST'] )
+@admin_login_required
 def add_account():
     if request.method == 'POST':
         username = request.form['username']
@@ -117,6 +176,7 @@ def add_account():
 
 
 @app.route('/manageAccounts', methods=["GET", "POST"])
+@admin_login_required
 def manage_accounts():
     if request.method == "POST":
         entry_id = request.form['acc_id']
@@ -126,6 +186,7 @@ def manage_accounts():
 
 
 @app.route('/editAccount', methods=["GET", "POST"])
+@admin_login_required
 def edit_account():
     entry_id = int(request.args.get('entry_id'))
     if request.method == "POST":
@@ -141,6 +202,7 @@ def edit_account():
 
 
 @app.route('/deleteAccount')
+@admin_login_required
 def delete_account():
     account_id = int(request.args.get('accountId'))
     ACCOUNTS.remove_entry(account_id)
@@ -158,11 +220,13 @@ def register():
             account_id = ACCOUNTS.create_unique_id()
             account = create_account(account_id, request.form['email'], request.form['password'], Account.Role.AUTHOR.value)
             ACCOUNTS.add_entry(account_id, account)
-            return redirect(url_for('home'))
+            response = redirect(url_for('home'))
+            response.set_cookie('userID', str(account_id))
+            return response
     return render_template("/auth/register.html",error=error, login=True)
 
-
 @app.route('/uploadfile', methods=['GET', 'POST'])
+@Author_login_required
 def upload_file():
     allowed_extensions = {'pdf', 'doc', 'docx'}
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
@@ -195,27 +259,37 @@ def forgot_password():
 
 
 @app.route('/review_page')
+@PCM_login_required
 def review_page():
     #retrive from DB
     return render_template("/review_page.html")
 
 
-@app.route('/assign_page')
+@app.route('/assign_page', methods=["GET", "POST"])
+@PCC_login_required
 def assign_page():
     #retrive from DB
-
-    return render_template("/assign_page.html", paper_lst = assignment_manager.get_volunteerable_papers())
+    if request.method == "POST":
+        paper_id = request.form['paperID']
+        pcms = request.form.getlist('assignable')
+    obj = [{"Paper": ARTIFACTS.get_entry(47).create_entry_dictionary(), 'PCM':"Jeff, Jose", "List_PCM": {"**Jeff": 12, "**Jefe":13, "Mario": 14, "Jasmine":11, "Martine": 23, "Wang":32}}]
+    return render_template("/assign_page.html", data = obj)
 
 
 @app.route('/rate_paper')
+@PCC_login_required
 def rate_paper():
     return render_template("/rate_paper.html")
+
 @app.route('/PCC_home')
+@PCC_login_required
 def PCC_home():
     # retrive from DB
-    return render_template("/PCC_home.html")
+    return render_template("/PCC_home.html", notifications = notification_manager.get_all_notifications(int(request.cookies.get('userID'))))
+
 
 @app.route('/volunteer')
+@PCM_login_required
 def volunteer():
     #retrive from DB
     papers = assignment_manager.get_volunteerable_papers()
@@ -223,6 +297,7 @@ def volunteer():
 
 
 @app.route('/volunteerPaper')
+@PCM_login_required
 def volunteer_paper():
     paper_id = int(request.args.get("paperID"))
     user_id = int(request.cookies.get('userID'))
@@ -231,6 +306,7 @@ def volunteer_paper():
     return jsonify({'code':"success"})
 
 @app.route('/resubmit', methods=['GET', 'POST'])
+@Author_login_required
 def resubmit():
     allowed_extensions = {'pdf', 'doc', 'docx'}
     ext_mime_type = {'pdf': 'application/pdf', 'doc': 'application/msword',
@@ -243,7 +319,6 @@ def resubmit():
         version = request.form['version']
         artifact_name = fl.filename
         ext = artifact_name.rsplit('.', 1)[1].lower()
-
         if ext in allowed_extensions:
             atf_manager.resubmit_paper(int(paper_id))
             version = str(int(version) + 1)
@@ -254,5 +329,8 @@ def resubmit():
     return render_template("/resubmit.html", files=atf_manager.get_author_paper(author_id))
 
 
+
+
 if __name__ == '__main__':
+    app.secret_key = 'super secret key'
     app.run()

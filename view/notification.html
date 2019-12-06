@@ -27,18 +27,18 @@
     <h2 style="text-align: center; margin-top: 20px">
         Notifications
     </h2>
-<form method="post"  enctype="multipart/form-data">
+<form method="post"  enctype="multipart/form-data" onsubmit="return confirm('Are you sure you want to update the deadlines?');">
     <div class="form-group">
     <label for="paperSubmission">Paper Submission Deadline</label>
-    <input type="text" class="form-control" name="title" placeholder="mm/dd/yyyy" required>
+    <input type="text" class="form-control" name="Author" placeholder="mm/dd/yyyy" value = {{notifications['Author']}} required>
   </div>
     <div class="form-group">
     <label for="pcmSubmission">PCM Submission Deadline</label>
-    <input type="text" class="form-control" name="topic" placeholder="mm/dd/yyyy" required>
+    <input type="text" class="form-control" name="PCM" placeholder="mm/dd/yyyy" required value = {{notifications['PCM']}}>
   </div>
     <div class="form-group">
     <label for="pccSubmission">PCC Submission Deadline</label>
-    <input type="text" class="form-control" name="topic" placeholder="mm/dd/yyyy" required>
+    <input type="text" class="form-control" name="PCC" placeholder="mm/dd/yyyy" required value = {{notifications['PCC']}}>
   </div>
 
 	<input type="submit" value="Submit" class="btn btn-primary float-left">

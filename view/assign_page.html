@@ -10,47 +10,97 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
-
 </head>
 <script>
-
     $(function(){
-         var papers = '{{ paper_lst|tojson }}';
-         papers = JSON.parse(papers);
-         for (var item of papers) {
-            $('#paper_lst').append('<tr><td class="accountId">'+ item['accountID'] + '</td><td>' + item['username']+ '</td><td>' + item['role']+ '</td><td><button class="btn btn-primary editAccount">Edit</button></td><td><button class="btn btn-danger deleteAccount">Delete</button></td></tr>');
-
+         var data = '{{ data|tojson }}';
+         data = JSON.parse(data);
+         for (var item of data) {
+            $('#files').append('<tr><td class="paperId" style="display:none">'+ item['Paper']['artifactID'] + '</td><td class="title">'+ item['Paper']['title'] + '</td><td class="PCMs">' + item['PCM']+ '</td><td >' + '<button class="btn btn-primary assign" data-target="#myModal">Assign</button></button></td></tr>');
         }
     });
 
+    $(function() {
+        $('.assign').click(function () {
+            var $row = $(this).closest("tr"),       // Finds the closest row <tr>
+                $tds = $row.find(".paperId").text();          // Finds all children <td> elements
+                $("#paperID").val($tds);
+                var inner = "";
+                var data = '{{ data|tojson }}';
+                data = JSON.parse(data);
+                var list_pcm = {};
+                for (var item of data) {
+                    if(item['Paper']['artifactID']=== parseInt($tds)){
+                        list_pcm = item['List_PCM']
+                    }
+                }
+                for (var pcm in list_pcm){
+                    if (list_pcm.hasOwnProperty(pcm)) {
+                            inner += "<option value=" +list_pcm[pcm]+ ">"+pcm+"</option>";
+                        }
+                }
+                $("#assignable").html(inner);
+                jQuery.noConflict();
+                $('#myModal').modal('show');
+        });
+    });
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
 </script>
 <body>
 
 {% include 'layout.html' %}
 <div class="container">
     <h2 style="text-align: center; margin-top: 20px">
-        Papers
+        Paper List
     </h2>
     <table class="table table-bordered table-dark">
   <thead>
     <tr>
       <th scope="col">Paper Title</th>
-      <th scope="col">Assigned PCM</th>
-        <th scope="col">Action</th>
-    </tr>
-    <tr>
-        <td> </td>
-        <td> </td>
-        <td> <button type="button" class="btn btn-success">Assign</button></td>
+      <th scope="col">PCMs Assigned</th>
+      <th scope="col">Action</th>
     </tr>
   </thead>
-
   <tbody id="files">
 
   </tbody>
 </table>
 </div>
 
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Assign Paper</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h5>Ctrl + click to multiselect. * before username indicates volunteered</h5>
+        <form action="" method="post" name="submit_paper" enctype="multipart/form-data">
+            <div class="form-group">
+                    <input type="hidden" class="form-control" name="paperID" id="paperID" placeholder="paperID" value="" required >
+                </div>
+            <div class="form-group">
+                <label for="assignable" style="clear:both">Assign</label><br>
+                <select multiple="multiple" id ="assignable" name="assignable" style="padding:5px" >
+                </select>
+            </div>
+            <input type="submit" value="Submit" class="btn btn-primary float-left">
+
+        </form>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 </body>
 </html>
