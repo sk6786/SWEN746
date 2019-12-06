@@ -18,11 +18,5 @@ class PCMAccount(Account):
     def notify_account_change(self):
         pass
 
-    def get_account_id(self):
-        return self._account_id
-
-    def get_username(self):
-        return self._username
-
     def get_password(self):
         return self._password

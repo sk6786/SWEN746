@@ -106,9 +106,9 @@ class Assignment(Entry):
             pcm_dict_num = reviews[pcm_id]
 
             if pcm_dict_num < 0:
-                if pcm_dict_num == Assignment.CurrentEnrollment.VOLUNTEERED:
+                if pcm_dict_num == Assignment.CurrentEnrollment.VOLUNTEERED.value:
                     pcm_reviews[pcm] = Assignment.CurrentEnrollment.VOLUNTEERED
-                elif pcm_dict_num == Assignment.CurrentEnrollment.ASSIGNED:
+                elif pcm_dict_num == Assignment.CurrentEnrollment.ASSIGNED.value:
                     pcm_reviews[pcm] = Assignment.CurrentEnrollment.ASSIGNED
             else:
                 pcm_reviews[pcm] = artifact_list.get_entry(reviews[pcm_dict_num])
@@ -121,12 +121,12 @@ class Assignment(Entry):
             self.reviews[pcm] = Assignment.CurrentEnrollment.VOLUNTEERED
 
     def pcm_remove_volunteer(self, pcm: Account):
-        if self.reviews[pcm] == Assignment.CurrentEnrollment.VOLUNTEERED:
+        if self.reviews[pcm].value == Assignment.CurrentEnrollment.VOLUNTEERED:
             del self.reviews[pcm]
 
     def pcc_assign_pcm(self, pcm: Account):
-        if self.reviews[pcm] <= 0 and self.reviews[pcm] is not None:
-            self.reviews = Assignment.CurrentEnrollment.ASSIGNED
+            self.reviews[pcm] = Assignment.CurrentEnrollment.ASSIGNED
+
 
     def pcc_remove_pcm(self, pcm: Account):
         pass

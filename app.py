@@ -203,7 +203,8 @@ def review_page():
 @app.route('/assign_page')
 def assign_page():
     #retrive from DB
-    return render_template("/assign_page.html")
+
+    return render_template("/assign_page.html", paper_lst = assignment_manager.get_volunteerable_papers())
 
 
 @app.route('/rate_paper')

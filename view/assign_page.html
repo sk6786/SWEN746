@@ -16,7 +16,7 @@
 
     $(function(){
          var papers = '{{ paper_lst|tojson }}';
-         var papers = JSON.parse(papers);
+         papers = JSON.parse(papers);
          for (var item of papers) {
             $('#paper_lst').append('<tr><td class="accountId">'+ item['accountID'] + '</td><td>' + item['username']+ '</td><td>' + item['role']+ '</td><td><button class="btn btn-primary editAccount">Edit</button></td><td><button class="btn btn-danger deleteAccount">Delete</button></td></tr>');
 
@@ -35,7 +35,7 @@
   <thead>
     <tr>
       <th scope="col">Paper Title</th>
-      <th scope="col">PCM</th>
+      <th scope="col">Assigned PCM</th>
         <th scope="col">Action</th>
     </tr>
     <tr>

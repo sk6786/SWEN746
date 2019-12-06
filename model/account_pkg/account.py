@@ -26,6 +26,9 @@ class Account(Entry, ABC):
     def get_entry_id(self):
         return self.account_id
 
+    def get_username(self):
+        return self.username
+
     def create_entry_dictionary(self):
         return {
             "accountID": self.account_id,
