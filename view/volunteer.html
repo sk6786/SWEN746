@@ -16,7 +16,7 @@
          var files = '{{ data|tojson }}';
          var files = JSON.parse(files);
          for (var item of files) {
-            $('#files').html('<tr><td class="paperId" style="display:none">'+ item['artifactID'] + '</td><td class="authorId" style="display:none">'+ item['authorID'] + '</td><td>'+ item['title'] + '</td><td class="authors">' + item['authors']+ '</td><td>' + '<button type="button" class="btn btn-success volunteer">Volunteer</button></td></tr>');
+            $('#files').append('<tr><td class="paperId" style="display:none">'+ item['artifactID'] + '</td><td class="authorId" style="display:none">'+ item['authorID'] + '</td><td>'+ item['title'] + '</td><td class="authors">' + item['authors']+ '</td><td>' + '<button type="button" class="btn btn-success volunteer">Volunteer</button></td></tr>');
 
         }
     });
