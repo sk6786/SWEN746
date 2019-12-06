@@ -83,6 +83,27 @@ class AssignmentManager:
             assignment.pcc_assign_pcm(pcm_acc)
             self.assignment_list.update_entry(paper_id, assignment)
 
+    def get_pcm_assigned_paper(self, pcm_id):
+        ls = []
+        assignments = self.assignment_list.get_list()
+        for i in assignments:
+            rvs = assignments[i].reviews
+            as_paper_dic = {}
+            for pcm in rvs:
+                as_pcm_id = pcm.get_entry_id()
+                if int(as_pcm_id) == pcm_id and rvs[pcm].value == -2:
+                    paper_id = assignments[i].get_entry_id()
+                    as_paper_dic['paperID'] = paper_id
+                    tmp_paper_dic = self.artifact_list.get_entry(paper_id).create_entry_dictionary()
+                    title = tmp_paper_dic['title']
+                    as_paper_dic['title'] = title
+                    version = tmp_paper_dic['version']
+                    as_paper_dic['fileName'] = title + str(version)
+            if as_paper_dic != {}:
+                ls.append(as_paper_dic)
+        return ls
+
+#
 # a = AssignmentManager()
-# a.assign_list_pcm(47, [-2])
-# print(a.get_assignable_papers())
+# print(a.get_pcm_assigned_paper(2))
+# # print(a.get_assignable_papers())

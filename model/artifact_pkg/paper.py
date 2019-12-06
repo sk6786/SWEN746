@@ -40,5 +40,5 @@ class Paper(Artifact):
         self._version = attributes["version"]
         self._topic = attributes["topic"]
 
-# a = Paper(1, 1, Artifact.ArtifactType.PAPER, 1, 'a', 'a', 'a', 1, 'a')
-# print(a.artifact_id)
+    def get_title(self):
+        return self._title
