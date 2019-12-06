@@ -257,12 +257,16 @@ def forgot_password():
 @PCM_login_required
 def review_page():
     #retrive from DB
-    papers = [{"paperID": "915" , "fileName": "test0", "title": "Hello"}]
+    papers = assignment_manager.get_pcm_assigned_paper(int(request.cookies.get('userID')))
     if request.method =="POST":
         #something
         return render_template("/review_page.html", papers = papers)
     return render_template("/review_page.html", papers = papers)
 
+
+@app.route('/file/<filename>')
+def file(filename):
+    return mongo.send_file(filename)
 
 @app.route('/assign_page', methods=["GET", "POST"])
 @PCC_login_required
